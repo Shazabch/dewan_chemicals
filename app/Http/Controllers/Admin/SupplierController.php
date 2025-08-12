@@ -5,10 +5,16 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Action;
 use App\Models\Supplier;
+use App\Traits\DailyBookEntryTrait;
+use App\Traits\HandlesBankPayments;
 use Illuminate\Http\Request;
+use App\Models\SupplierTransaction;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class SupplierController extends Controller
 {
+    use HandlesBankPayments, DailyBookEntryTrait;
     protected $pageTitle;
 
     public function __construct()
@@ -24,10 +30,108 @@ class SupplierController extends Controller
     public function index()
     {
         $pageTitle = $this->pageTitle;
+        $emptyMessage = 'No supplier found';
+        $banks = \App\Models\Bank::where('name', '!=', 'Cash')->get();
         $suppliers = $this->getSuppliers()->paginate(getPaginate());
-        return view('admin.supplier.index', compact('pageTitle', 'suppliers'));
+        return view('admin.supplier.index', compact('pageTitle', 'suppliers', 'banks'));
     }
+    // ===================================================================
+    // ADVANCE PAYMENT LOGIC FOR SUPPLIERS
+    // ===================================================================
 
+    public function storeAdvance(Request $request)
+    {
+        $paymentMethod = $request->payment_method;
+        $transactionType = $request->transaction_type;
+
+        // Add the new field to validation
+        $rules = [
+            'supplier_id'      => 'required|exists:suppliers,id',
+            'transaction_type' => 'required|in:payment,receive', // Money Out or Money In
+            'payment_method'   => 'required|in:cash,bank,both',
+            'remarks'          => 'nullable|string|max:255',
+            'amount_cash'      => [Rule::requiredIf(fn() => in_array($paymentMethod, ['cash', 'both'])), 'nullable', 'numeric', 'min:0'],
+            'amount_bank'      => [Rule::requiredIf(fn() => in_array($paymentMethod, ['bank', 'both'])), 'nullable', 'numeric', 'min:0'],
+            'bank_id'          => [Rule::requiredIf(fn() => in_array($paymentMethod, ['bank', 'both'])), 'nullable', 'exists:banks,id'],
+        ];
+        $request->validate($rules);
+
+        $supplierId = $request->supplier_id;
+        $amount_cash = $request->amount_cash ?? 0;
+        $amount_bank = $request->amount_bank ?? 0;
+        $total_amount = $amount_cash + $amount_bank;
+
+        if ($total_amount <= 0) {
+            $notify[] = ['error', 'Total amount must be greater than zero.'];
+            return back()->withNotify($notify)->withInput();
+        }
+
+        try {
+            $supplierTransaction = DB::transaction(function () use ($supplierId, $total_amount, $transactionType, $request) {
+
+                $lastTransaction = \App\Models\SupplierTransaction::where('supplier_id', $supplierId)
+                    ->orderBy('id', 'desc')
+                    ->lockForUpdate()
+                    ->first();
+
+                $openingBalance = $lastTransaction ? $lastTransaction->closing_balance : \App\Models\Supplier::findOrFail($supplierId)->opening_balance ?? 0.00;
+
+                // --- [NEW] Dynamic Logic Based on Transaction Type ---
+                if ($transactionType == 'payment') { // Money Out (Paying a bill/advance)
+                    $creditAmount = $total_amount;
+                    $debitAmount = 0.00;
+                    $source = 'Payment to Supplier';
+                    $closingBalance = $openingBalance - $creditAmount;
+                } else { // 'receive' -> Money In (Receiving a refund)
+                    $debitAmount = $total_amount;
+                    $creditAmount = 0.00;
+                    $source = 'Refund from Supplier';
+                    $closingBalance = $openingBalance + $debitAmount;
+                }
+
+                return \App\Models\SupplierTransaction::create([
+                    'supplier_id'     => $supplierId,
+                    'credit_amount'   => $creditAmount,
+                    'debit_amount'    => $debitAmount,
+                    'opening_balance' => $openingBalance,
+                    'closing_balance' => $closingBalance,
+                    'source'          => $source,
+                    'bank_id'         => $request->bank_id,
+
+                ]);
+            });
+
+            // --- [NEW] Dynamic Logic for Traits ---
+            $traitTransactionType = ($transactionType == 'payment') ? 'credit' : 'debit';
+            // 'credit' because money is LEAVING your accounts
+            // 'debit' because money is ENTERING your accounts
+
+            $this->handlePaymentTransaction(
+                $request->payment_method,
+                $amount_cash,
+                $amount_bank,
+                $request->bank_id,
+                $supplierTransaction->id,
+                'SupplierTransaction',
+                $traitTransactionType
+            );
+
+            $this->handleDailyBookEntries(
+                $amount_cash,
+                $amount_bank,
+                $traitTransactionType,
+                $request->payment_method,
+                'SupplierTransaction',
+                $supplierTransaction->id
+            );
+
+            $notify[] = ['success', 'Transaction recorded successfully.'];
+            return back()->withNotify($notify);
+        } catch (\Exception $e) {
+            $notify[] = ['error', 'An error occurred: ' . $e->getMessage()];
+            return back()->withNotify($notify)->withInput();
+        }
+    }
     public function supplierPDF()
     {
         $pageTitle = $this->pageTitle;
@@ -120,7 +224,7 @@ class SupplierController extends Controller
             'mobile'       => 'nullable',
             'company_name' => 'nullable|string|max:40',
             'address'      => 'nullable|string|max:500',
-            'opening_balance' => 'nullable|numeric|min:0',
+            'opening_balance' => 'nullable',
         ]);
     }
 

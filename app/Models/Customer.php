@@ -7,6 +7,8 @@ use App\Traits\UserNotify;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Storage;
 
 class Customer extends Model
@@ -64,6 +66,11 @@ class Customer extends Model
             get: fn () => $this->name,
         );
     }
+     public function transactions(): HasMany
+    {
+        return $this->HasMany(CustomerTransaction::class);
+    }
+
 
     public function mobileNumber(): Attribute
     {

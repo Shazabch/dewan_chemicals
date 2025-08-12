@@ -39,6 +39,13 @@
                                             data-modal_title="@lang('Edit Supplier')" type="button">
                                             <i class="la la-pencil"></i>@lang('Edit')
                                         </button>
+                                        @permit('admin.supplier.advance.store')
+                                        <button type="button" class="btn btn-sm btn-outline--success advanceModalBtn"
+                                            data-supplier_id="{{ $supplier->id }}"
+                                            data-supplier_name="{{ $supplier->name }}">
+                                            <i class="las la-hand-holding-usd"></i>@lang('Advance')
+                                        </button>
+                                        @endpermit
                                         <form id="delete-form-{{ $supplier->id }}" action="{{ route('admin.suppliers.destroy', $supplier->id) }}" method="POST" style="display: none;">
                                             @csrf
                                             @method('DELETE')
@@ -153,6 +160,82 @@
         </div>
     </div>
 </div>
+{{-- Advance Payment Modal --}}
+<div class="modal fade" id="advanceModal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="las la-times"></i>
+                </button>
+            </div>
+            <form action="{{ route('admin.supplier.advance.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="supplier_id"> {{-- IMPORTANT: Changed to supplier_id --}}
+
+                <div class="modal-body">
+                    {{-- [NEW] Transaction Type Selector for Suppliers --}}
+                    <div class="form-group">
+                        <label>@lang('Transaction Type')</label>
+                        <select name="transaction_type" class="form-control" required>
+                            <option value="payment">@lang('Pay Bill / Advance (Money Out)')</option>
+                            <option value="receive">@lang('Receive Refund / Money In')</option>
+                        </select>
+                    </div>
+
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label>@lang('Payment Method')</label>
+                                <select name="payment_method" class="form-control" id="paymentMethodSelect" required>
+                                    <option value="cash">@lang('Cash')</option>
+                                    <option value="bank">@lang('Bank')</option>
+                                    <option value="both">@lang('Both')</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-3" id="cash_field">
+                                <label>@lang('Cash Amount')</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                    <input type="number" step="any" name="amount_cash" class="form-control" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3" id="bank_field" style="display: none;">
+                                <label>@lang('Bank Name')</label>
+                                <select name="bank_id" class="form-control">
+                                    <option value="" selected>@lang('Select Bank')</option>
+                                    @foreach($banks as $bank)
+                                    <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group mb-3" id="bank_amount_field" style="display: none;">
+                                <label>@lang('Bank Amount')</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                    <input type="number" step="any" name="amount_bank" class="form-control" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">@lang('Remarks')</label>
+                        <textarea name="remarks" class="form-control" rows="3" placeholder="@lang('Optional remarks')"></textarea>
+                    </div>
+                </div>
+                @permit('admin.supplier.advance.store')
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn--primary w-100 h-45">@lang('Submit Advance')</button>
+                </div>
+                @endpermit
+            </form>
+        </div>
+    </div>
+</div>
 {{-- IMPORT MODAL --}}
 <div class="modal fade" id="importModal" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -246,6 +329,41 @@ $params = request()->all();
         $(".importBtn").on('click', function(e) {
             let importModal = $("#importModal");
             importModal.modal('show');
+        });
+        // Script for Advance Modal
+        $('.advanceModalBtn').on('click', function() {
+            var modal = $('#advanceModal');
+            let supplierId = $(this).data('supplier_id'); // Changed to supplier_id
+            let supplierName = $(this).data('supplier_name');
+
+            modal.find('input[name=supplier_id]').val(supplierId); // Changed to supplier_id
+            modal.find('.modal-title').text(`@lang('Pay Advance to') ${supplierName}`);
+
+            modal.find('form')[0].reset();
+            $('#paymentMethodSelect').trigger('change');
+            modal.modal('show');
+        });
+
+        // Script to toggle payment fields
+        $('#paymentMethodSelect').on('change', function() {
+            var method = $(this).val();
+            var cashField = $('#cash_field');
+            var bankField = $('#bank_field');
+            var bankAmountField = $('#bank_amount_field');
+
+            if (method === 'cash') {
+                cashField.show().find('input').prop('required', true);
+                bankField.hide().find('select').prop('required', false);
+                bankAmountField.hide().find('input').prop('required', false);
+            } else if (method === 'bank') {
+                cashField.hide().find('input').prop('required', false);
+                bankField.show().find('select').prop('required', true);
+                bankAmountField.show().find('input').prop('required', true);
+            } else if (method === 'both') {
+                cashField.show().find('input').prop('required', true);
+                bankField.show().find('select').prop('required', true);
+                bankAmountField.show().find('input').prop('required', true);
+            }
         });
     })(jQuery);
 </script>

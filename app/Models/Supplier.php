@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Traits\ActionTakenBy;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supplier extends Model
 {
@@ -52,5 +52,10 @@ class Supplier extends Model
         $purchaseAmount = $this->purchases->where('due_amount', '<', 0)->sum('due_amount');
         $returnAmount   = $this->purchaseReturns->where('due_amount', '>', 0)->sum('due_amount');
         return abs($purchaseAmount) + $returnAmount;
+    }
+    // In app/Models/Supplier.php
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(SupplierTransaction::class, 'supplier_id');
     }
 }

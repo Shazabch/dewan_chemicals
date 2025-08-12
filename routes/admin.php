@@ -21,7 +21,7 @@ use Illuminate\Http\Request;
 
 Route::namespace('Auth')->group(function () {
     Route::middleware('admin.guest')->group(function () {
-    Route::controller('LoginController')->group(function () {
+        Route::controller('LoginController')->group(function () {
             Route::get('/', 'showLoginForm')->name('login');
             Route::post('/', 'login')->name('login');
             Route::get('logout', 'logout')->middleware('admin')->withoutMiddleware('admin.guest')->name('logout');
@@ -80,7 +80,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('add', 'add')->name('add');
         Route::get('edit/{id}', 'edit')->name('edit');
         Route::post('save/{id?}', 'save')->name('save');
-         Route::delete('delete/{id}', 'destroy')->name('destroy');
+        Route::delete('delete/{id}', 'destroy')->name('destroy');
     });
 
     // permission
@@ -142,48 +142,47 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
     })->name('warehouse.detail');
 
     //Bank Manage
-   Route::controller('BankController')->name('bank.')->prefix('bank')->group(function(){
-       Route::get('manage' ,'index')->name('index');
+    Route::controller('BankController')->name('bank.')->prefix('bank')->group(function () {
+        Route::get('manage', 'index')->name('index');
     });
     Route::get('/bank-detail/{id}', function ($id) {
         $bank = Bank::findOrFail($id);
         $pageTitle = 'Bank Detail Page -' . $bank->name;
-        return view('bank.detail', compact('pageTitle' , 'bank'));
+        return view('bank.detail', compact('pageTitle', 'bank'));
     })->name('bank.detail');
 
-    Route::get('/manage/sale' , function(){
+    Route::get('/manage/sale', function () {
         $pageTitle = 'Manage Sale';
-        return view('admin.sale.manage' , compact('pageTitle'));
+        return view('admin.sale.manage', compact('pageTitle'));
     })->name('manage_sale');
-    Route::get('/services/stock-in' , function(){
+    Route::get('/services/stock-in', function () {
         $pageTitle = 'Manage Stock In';
-        return view('admin.services.stock-in' , compact('pageTitle'));
+        return view('admin.services.stock-in', compact('pageTitle'));
     })->name('manage_stock_in');
-    Route::get('/production/flows' , function(){
+    Route::get('/production/flows', function () {
         $pageTitle = 'Production Flows';
-        return view('admin.production.flow' , compact('pageTitle'));
+        return view('admin.production.flow', compact('pageTitle'));
     })->name('production_flow');
-    Route::get('/services/stock-out' , function(){
+    Route::get('/services/stock-out', function () {
         $pageTitle = 'Manage Stock Out';
-        return view('admin.services.stock-out' , compact('pageTitle'));
+        return view('admin.services.stock-out', compact('pageTitle'));
     })->name('manage_stock_out');
-    Route::get('/services/stock-transfer' , function(){
+    Route::get('/services/stock-transfer', function () {
         $pageTitle = 'Manage Stock Transfer';
-        return view('admin.services.stock-transfer' , compact('pageTitle'));
+        return view('admin.services.stock-transfer', compact('pageTitle'));
     })->name('manage_stock_transfer');
-    Route::get('/services/stock-details' , function(){
+    Route::get('/services/stock-details', function () {
         $pageTitle = 'Manage Stock Details';
-        return view('admin.services.stock-details' , compact('pageTitle'));
+        return view('admin.services.stock-details', compact('pageTitle'));
     })->name('manage_stock_details');
-     Route::get('/services/stock-client-details' , function(){
+    Route::get('/services/stock-client-details', function () {
         $pageTitle = 'Stock Client Report';
-        return view('admin.services.stock-client-details' , compact('pageTitle'));
+        return view('admin.services.stock-client-details', compact('pageTitle'));
     })->name('stock_client_details');
 
     Route::controller('PdfController')->name('pdf.')->prefix('pdf')->group(function () {
 
         Route::get('pdf-stock-detail', 'stockDetailPDF')->name('stock-detail');
-
     });
 
 
@@ -201,9 +200,9 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('invoice-check', 'invoiceCheck')->name('invoice.check');
     });
 
-    Route::get('/manage/purchase' , function(){
+    Route::get('/manage/purchase', function () {
         $pageTitle = 'Manage Purchase';
-        return view('admin.purchase.manage' , compact('pageTitle'));
+        return view('admin.purchase.manage', compact('pageTitle'));
     })->name('manage_purchase');
     //Manage Purchase Return
     Route::controller('PurchaseReturnController')->name('purchase.return.')->prefix('purchase-return')->group(function () {
@@ -323,9 +322,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
 
     Route::delete('admin/customers/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
     Route::get('/customers-pdf', [PdfController::class, 'customersPdf'])->name('customers.pdf');
-
-
-
+    Route::post('customer/advance', 'CustomerController@storeAdvance')->name('customer.advance.store');
     //Payment - Supplier
     Route::controller('SupplierPaymentController')->name('supplier.payment.')->prefix('supplier/payment')->group(function () {
         Route::get('index/{id}', 'index')->name('index');
@@ -335,7 +332,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         //download
         Route::get('pdf/{id}', 'customerPayPDF')->name('pdf');
     });
-
+    Route::post('suppliers/advance', 'SupplierController@storeAdvance')->name('supplier.advance.store');
 
     //Payment - Customer
     Route::controller('CustomerPaymentController')->name('customer.payment.')->prefix('customer/payment')->group(function () {
@@ -370,9 +367,9 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::post('store/{id?}', 'store')->name('store');
         Route::post('import', 'import')->name('import');
     });
-    Route::get('/manage/expense' , function(){
+    Route::get('/manage/expense', function () {
         $pageTitle = 'Manage Expense';
-        return view('admin.expense.manage' , compact('pageTitle'));
+        return view('admin.expense.manage', compact('pageTitle'));
     })->name('manage_expense');
 
     Route::controller('ExpenseController')->name('expense.')->prefix('expense')->group(function () {
@@ -382,9 +379,9 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::post('store/{id?}', 'store')->name('store');
         Route::post('import', 'import')->name('import');
     });
-    Route::get('/manage/expense-type' , function(){
+    Route::get('/manage/expense-type', function () {
         $pageTitle = 'Manage Expense Type';
-        return view('admin.expense.e-type' , compact('pageTitle'));
+        return view('admin.expense.e-type', compact('pageTitle'));
     })->name('manage_expense_type');
 
 
@@ -449,7 +446,6 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         // Logo-Icon
         Route::get('setting/logo-icon', 'logoIcon')->name('setting.logo.icon');
         Route::post('setting/logo-icon', 'logoIconUpdate')->name('setting.logo.icon');
-
     });
 
 
@@ -490,16 +486,14 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('system-update/log', 'systemUpdateLog')->name('update.log');
     });
     //Day Book Banks
-    Route::get('/day-book' , function(){
+    Route::get('/day-book', function () {
         $pageTitle = 'Day Book';
-        return view('admin.daybook.index' , compact('pageTitle'));
+        return view('admin.daybook.index', compact('pageTitle'));
     })->name('daybook.index');
-    Route::get('/day-book-details/{date}' , function(){
+    Route::get('/day-book-details/{date}', function () {
         $pageTitle = 'Day Book Details';
-        return view('admin.daybook.detail' , compact('pageTitle'));
+        return view('admin.daybook.detail', compact('pageTitle'));
     })->name('daybook.detail');
     Route::get('/admin/daybook/pdf/{date}', [DayBookDetailComponent::class, 'generatePdf'])->name('daybook.pdf');
     Route::get('/supplier/invoice/download/{supplierId}', [SupplierTransaction::class, 'generateInvoice'])->name('supplier.invoice');
-
-
 });
