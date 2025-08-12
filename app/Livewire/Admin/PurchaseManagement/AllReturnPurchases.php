@@ -25,6 +25,8 @@ class AllReturnPurchases extends Component
     public $return_date;
     public $products = [];
     public $discount = 0;
+    public $fine = 0;
+    public $return_expense = 0;
     public $note = '';
 
     // Display properties
@@ -63,7 +65,7 @@ class AllReturnPurchases extends Component
                         // For new items, it's handled by products.min and initial gte:0
                     }
                 } elseif (($value['quantity'] <= 0) && $this->editMode) {
-                     // If editing an existing PCS item, quantity must be > 0
+                    // If editing an existing PCS item, quantity must be > 0
                 }
             }],
         ];
@@ -112,6 +114,8 @@ class AllReturnPurchases extends Component
 
             $this->return_date = Carbon::parse($this->purchaseReturnInstance->return_date)->format('Y-m-d');
             $this->discount = $this->purchaseReturnInstance->discount_amount ?? 0;
+            $this->fine = $this->purchaseReturnInstance->fine ?? 0;
+            $this->return_expense = $this->purchaseReturnInstance->return_expense ?? 0;
             $this->note = $this->purchaseReturnInstance->note;
             $this->receivedAmount = $this->purchaseReturnInstance->received_amount ?? 0;
 
@@ -133,8 +137,8 @@ class AllReturnPurchases extends Component
                     'net_weight' => $detail->net_weight ?? 0, // Added
                     'price' => $detail->price,
                     'total' => ($productUnit === 'kg' || $productUnit === 'kilogram') ?
-                               ($detail->net_weight ?? 0) * $detail->price :
-                               $detail->quantity * $detail->price,
+                        ($detail->net_weight ?? 0) * $detail->price :
+                        $detail->quantity * $detail->price,
                 ];
             }
         } else {
@@ -220,17 +224,29 @@ class AllReturnPurchases extends Component
         $this->calculateTotals();
         $this->validateOnly('discount');
     }
+    public function updatedFine()
+    {
+        $this->fine = (float) $this->fine;
+        if ($this->fine < 0) $this->fine = 0;
+        $this->calculateTotals();
+    }
+    public function updatedReturnExpense()
+    {
+        $this->return_expense = (float) $this->return_expense;
+        if ($this->return_expense < 0) $this->return_expense = 0;
+        $this->calculateTotals();
+    }
 
     public function calculateTotals()
     {
         $this->grandTotal = 0;
         foreach ($this->products as $product) {
-             $productUnit = strtolower($product['unit_name'] ?? 'pcs');
-             if ($productUnit === 'kg' || $productUnit === 'kilogram') {
-                 $this->grandTotal += ($product['net_weight'] ?? 0) * ($product['price'] ?? 0);
-             } else {
-                 $this->grandTotal += ($product['quantity'] ?? 0) * ($product['price'] ?? 0);
-             }
+            $productUnit = strtolower($product['unit_name'] ?? 'pcs');
+            if ($productUnit === 'kg' || $productUnit === 'kilogram') {
+                $this->grandTotal += ($product['net_weight'] ?? 0) * ($product['price'] ?? 0);
+            } else {
+                $this->grandTotal += ($product['quantity'] ?? 0) * ($product['price'] ?? 0);
+            }
         }
 
         if ($this->discount > $this->grandTotal) {
@@ -239,6 +255,7 @@ class AllReturnPurchases extends Component
         }
 
         $this->receivableAmount = $this->grandTotal - $this->discount;
+        $this->receivableAmount += $this->fine + $this->return_expense;
 
         if ($this->editMode && $this->purchaseReturnInstance) {
             $this->dueAmount = $this->receivableAmount - $this->purchaseReturnInstance->received_amount;
@@ -252,7 +269,7 @@ class AllReturnPurchases extends Component
         $this->validate(); // Run full validation
 
         $this->totalPriceFromProducts = 0; // Recalculate for save
-        foreach($this->products as $item){
+        foreach ($this->products as $item) {
             $productUnit = strtolower($item['unit_name'] ?? 'pcs');
             if ($productUnit === 'kg' || $productUnit === 'kilogram') {
                 $this->totalPriceFromProducts += ($item['net_weight'] ?? 0) * ($item['price'] ?? 0);
@@ -295,8 +312,8 @@ class AllReturnPurchases extends Component
             $productUnit = strtolower($requestedProduct->unit_name ?? 'pcs');
             $originalPurchaseDetail = $this->purchase->purchaseDetails->where('product_id', $requestedProduct->product_id)->first();
             $currentStock = ProductStock::where('warehouse_id', $this->purchase->warehouse_id)
-                                        ->where('product_id', $requestedProduct->product_id)
-                                        ->first();
+                ->where('product_id', $requestedProduct->product_id)
+                ->first();
 
             if ($productUnit === 'kg' || $productUnit === 'kilogram') {
                 if (($requestedProduct->net_weight ?? 0) > ($originalPurchaseDetail->net_weight ?? 0)) {
@@ -324,6 +341,9 @@ class AllReturnPurchases extends Component
         $currentPurchaseReturn->return_date       = Carbon::parse($this->return_date);
         $currentPurchaseReturn->total_price       = $this->totalPriceFromProducts;
         $currentPurchaseReturn->discount_amount   = $this->discount;
+        $currentPurchaseReturn->fine = $this->fine;
+        $currentPurchaseReturn->return_expense = $this->return_expense;
+
         $currentPurchaseReturn->receivable_amount = $this->receivableAmount;
 
         if ($this->editMode) {
@@ -380,7 +400,7 @@ class AllReturnPurchases extends Component
                 $returnDetail->save();
                 $processedDetailIds[] = $returnDetail->id;
             } elseif ($returnDetail) { // If not being returned but detail existed, mark for cleanup
-                 // Deletion logic below will handle stock adjustment
+                // Deletion logic below will handle stock adjustment
             }
 
             // Update stock: For purchase returns, stock DECREASES
@@ -397,8 +417,7 @@ class AllReturnPurchases extends Component
                         // For simplicity, if quantity is just '1' for a bulk KG item, it might not change unless net_weight becomes 0.
                         // If quantity for KG represents distinct units (e.g. 2 bags of X kg each), and one is returned, quantity should also decrease.
                         // Let's assume for now quantity is also adjusted if related weight is adjusted.
-                         if($quantityChangeForStockAdjustment !=0 ) $stockToUpdate->quantity -= $quantityChangeForStockAdjustment;
-
+                        if ($quantityChangeForStockAdjustment != 0) $stockToUpdate->quantity -= $quantityChangeForStockAdjustment;
                     }
                 } else { // PCS items
                     if ($quantityChangeForStockAdjustment != 0) {
@@ -420,7 +439,7 @@ class AllReturnPurchases extends Component
                     ->first();
                 if ($stockToAdjust) {
                     $productUnitClean = strtolower($detailToClean->product->unit->name ?? 'pcs');
-                    if($productUnitClean === 'kg' || $productUnitClean === 'kilogram'){
+                    if ($productUnitClean === 'kg' || $productUnitClean === 'kilogram') {
                         $stockToAdjust->net_weight = ($stockToAdjust->net_weight ?? 0) + ($detailToClean->net_weight ?? 0); // Add back
                         // Adjust quantity if applicable
                         $stockToAdjust->quantity += $detailToClean->quantity; // Add back associated quantity
@@ -431,7 +450,7 @@ class AllReturnPurchases extends Component
                 }
                 $detailToClean->delete();
             }
-             // After cleaning, check if original purchase status needs to revert to NO_RETURN
+            // After cleaning, check if original purchase status needs to revert to NO_RETURN
             $remainingActiveDetails = PurchaseReturnDetails::where('purchase_return_id', $currentPurchaseReturn->id)->exists();
             if (!$remainingActiveDetails && $this->purchase->return_status == Status::YES) {
                 $this->purchase->return_status = Status::NO;

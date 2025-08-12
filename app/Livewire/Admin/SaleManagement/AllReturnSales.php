@@ -24,6 +24,8 @@ class AllReturnSales extends Component
     public $return_date;
     public $products = []; // This will store items for the return
     public $discount = 0;
+    public $fine = 0;
+    public $return_expense = 0;
     public $note = '';
 
     // Display properties
@@ -83,6 +85,8 @@ class AllReturnSales extends Component
             $this->saleReturnInstance = SaleReturn::with('details.product.unit')->findOrFail($saleReturnId);
             $this->return_date = Carbon::parse($this->saleReturnInstance->return_date)->format('Y-m-d');
             $this->discount = $this->saleReturnInstance->discount_amount ?? 0;
+            $this->fine = $this->saleReturnInstance->fine ?? 0;
+            $this->return_expense = $this->saleReturnInstance->return_expense ?? 0;
             $this->note = $this->saleReturnInstance->note;
             $this->paidAmount = $this->saleReturnInstance->paid_amount ?? 0; // From existing sale return
 
@@ -179,6 +183,18 @@ class AllReturnSales extends Component
         $this->calculateTotals();
         $this->validateOnly('discount');
     }
+    public function updatedFine()
+    {
+        $this->fine = (float) $this->fine;
+        if ($this->fine < 0) $this->fine = 0;
+        $this->calculateTotals();
+    }
+        public function updatedReturnExpense()
+    {
+        $this->return_expense = (float) $this->return_expense;
+        if ($this->return_expense < 0) $this->return_expense = 0;
+        $this->calculateTotals();
+    }
 
     public function calculateTotals()
     {
@@ -189,6 +205,8 @@ class AllReturnSales extends Component
             }
         }
 
+
+
         if ($this->discount > $this->grandTotal) {
             // $this->addError('discount', 'Discount cannot exceed total price.');
             // This should be handled by validation rule ideally or capped
@@ -196,6 +214,7 @@ class AllReturnSales extends Component
         }
 
         $this->payableAmount = $this->grandTotal - $this->discount;
+         $this->payableAmount+=$this->fine + $this->return_expense;
         if ($this->editMode) {
             $this->dueAmount = $this->payableAmount - $this->paidAmount;
         } else {
@@ -275,6 +294,8 @@ class AllReturnSales extends Component
         $currentSaleReturn->return_date     = Carbon::parse($this->return_date);
         $currentSaleReturn->total_price     = $this->totalPriceFromProducts;
         $currentSaleReturn->discount_amount = $this->discount;
+        $currentSaleReturn->fine = $this->fine;
+        $currentSaleReturn->return_expense = $this->return_expense;
         $currentSaleReturn->payable_amount  = $this->payableAmount; // This is total_price - discount
 
         // Due amount needs to be calculated based on what was already paid for this return
