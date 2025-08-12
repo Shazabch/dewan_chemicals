@@ -26,7 +26,7 @@ class CustomerController extends Controller
     }
     protected function getCustomers()
     {
-        return Customer::searchable(['name', 'mobile', 'email', 'address'], false)->with('sale', 'saleReturns')->orderBy('name', 'asc');
+        return Customer::searchable(['name', 'mobile', 'email', 'address'], true)->with('sale', 'saleReturns')->orderBy('name', 'asc');
     }
     public function index()
     {

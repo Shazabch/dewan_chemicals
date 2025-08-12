@@ -24,7 +24,7 @@ class SupplierController extends Controller
 
     protected function getSuppliers()
     {
-        return Supplier::searchable(['name', 'mobile', 'email', 'address'], false)->with('purchases', 'purchaseReturns')->orderBy('name', 'asc');
+        return Supplier::searchable(['name', 'mobile', 'email', 'address'], true)->with('purchases', 'purchaseReturns')->orderBy('name', 'asc');
     }
 
     public function index()
