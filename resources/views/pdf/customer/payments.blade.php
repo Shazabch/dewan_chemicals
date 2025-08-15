@@ -6,8 +6,7 @@
         <div class="float-left">
             <h6>@lang('Customer Info')</h6>
             <p class="mb-5px">@lang('Name'): {{ $customer->name }}</p>
-            <p class="mb-5px">@lang('Email'): {{ $customer->email }}</p>
-            <p class="mb-5px">@lang('Mobile'): +{{ $customer->mobile }}</p>
+            <p class="mb-5px">@lang('Mobile'): {{ $customer->mobile }}</p>
         </div>
 
         <div class="float-right">

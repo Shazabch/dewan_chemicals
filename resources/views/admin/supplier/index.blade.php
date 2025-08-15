@@ -1,6 +1,11 @@
 @extends('admin.layouts.app')
 @section('panel')
 <div class="row">
+    <style>
+        .sortable span{
+            color: white;
+        }
+    </style>
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body p-0">
@@ -9,8 +14,17 @@
                         <thead>
                             <tr>
                                 <th>@lang('S.N.')</th>
-                                <th>@lang('Name')</th>
-                                <th>@lang('Book Let')</th>
+
+                                <th class="sortable" data-col-index="1" data-type="string">
+                                    <span class="">@lang('Name')</span>
+                                    <span class="sort-ind ms-1">↕</span>
+                                </th>
+
+                                <th class="sortable" data-col-index="2" data-type="number">
+                                    <span>@lang('Book Let')</span>
+                                    <span class="sort-ind ms-1">↕</span>
+                                </th>
+
                                 <th>@lang('Mobile | Email')</th>
                                 <th>@lang('Opening Balance')</th>
                                 <th>@lang('Payable')</th>
@@ -183,7 +197,7 @@
                             <option value="receive">@lang('Receive Refund / Money In')</option>
                         </select>
                     </div> -->
-                     <input type="hidden"  name="transaction_type" value="payment">
+                    <input type="hidden" name="transaction_type" value="payment">
 
                     <hr>
                     <div class="row">
@@ -387,6 +401,64 @@ $params = request()->all();
             }
         });
     }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const table = document.querySelector('.table--light.table');
+  if (!table) return;
+  const tbody = table.querySelector('tbody');
+  const headers = table.querySelectorAll('thead th.sortable');
+
+  headers.forEach(th => {
+    th.addEventListener('click', function() {
+      const colIndex = parseInt(th.dataset.colIndex, 10);
+      const type = th.dataset.type || 'string';
+      const newDir = th.dataset.dir === 'asc' ? 'desc' : 'asc';
+
+      // reset other headers
+      headers.forEach(h => {
+        h.dataset.dir = '';
+        const hi = h.querySelector('.sort-ind');
+        if (hi) hi.textContent = '↕';
+      });
+
+      th.dataset.dir = newDir;
+
+      const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.querySelectorAll('td').length);
+
+      rows.sort((a, b) => {
+        const ta = a.children[colIndex]?.textContent.trim() ?? '';
+        const tb = b.children[colIndex]?.textContent.trim() ?? '';
+
+        let cmp = 0;
+        if (type === 'number') {
+          const na = parseFloat(ta.replace(/[^0-9.\-]/g, '')) || 0;
+          const nb = parseFloat(tb.replace(/[^0-9.\-]/g, '')) || 0;
+          cmp = na - nb;
+        } else {
+          // string comparison with numeric-aware locale compare
+          cmp = ta.localeCompare(tb, undefined, { sensitivity: 'base', numeric: true });
+        }
+
+        return newDir === 'asc' ? cmp : -cmp;
+      });
+
+      rows.forEach(r => tbody.appendChild(r)); // reattach in new order
+
+      const icon = th.querySelector('.sort-ind');
+      if (icon) icon.textContent = newDir === 'asc' ? '▲' : '▼';
+
+      // Optional: re-number S.N. column after sort (uncomment if you want sequential S.N.)
+      /*
+      let start = 1;
+      rows.forEach((row, i) => {
+        const snCell = row.children[0];
+        if (snCell) snCell.textContent = start + i;
+      });
+      */
+    });
+  });
+});
 </script>
 
 @endpush
