@@ -8,6 +8,8 @@ use App\Models\CustomerTransaction;
 use App\Models\SupplierTransaction;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 
 class BankTransactionDetails extends Component
 {
@@ -26,6 +28,46 @@ class BankTransactionDetails extends Component
         $this->bankId = $bankId;
 
         $this->bank = Bank::findOrFail($bankId);
+    }
+     public function savePdf()
+    {
+
+
+        $directory = 'banks_pdf';
+         $transactions = BankTransaction::where('bank_id', $this->bankId)
+            ->where(function ($query) {
+                $query->when($this->search, function ($q) {
+                    $q->where('source', 'like', '%' . $this->search . '%')
+                        ->orWhere('data_model', 'like', '%' . $this->search . '%');
+                });
+            })
+            ->when($this->startDate, function ($query) {
+                $query->whereDate('created_at', '>=', $this->startDate);
+            })
+            ->when($this->endDate, function ($query) {
+                $query->whereDate('created_at', '<=', $this->endDate);
+            })
+            ->latest()
+            ->get();
+        // Generate PDF
+        $pdf = Pdf::loadView('pdf.banks.payments', [
+            'pageTitle' => $this->bank->name . ' Details',
+            'bank' => $this->bank,
+            'transactions' => $transactions,
+        ])->setOption('defaultFont', 'Arial');
+
+        // Ensure the directory exists
+        if (!Storage::disk('public')->exists($directory)) {
+            Storage::disk('public')->makeDirectory($directory);
+        }
+        $filename = 'pdf_'.$this->bankId. now()->format('Ymd_His') . '.pdf'; // Unique filename
+        $filepath = $directory . '/' . $filename;
+
+        // Save the PDF to storage
+        Storage::disk('public')->put($filepath, $pdf->output());
+
+        $this->dispatch('notify', status: 'success', message: 'PDF generated successfully!');
+        return response()->download(storage_path('app/public/' . $filepath), $filename);
     }
     public function updatingSearch()
     {

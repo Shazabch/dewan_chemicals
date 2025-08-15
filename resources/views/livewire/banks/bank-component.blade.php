@@ -7,6 +7,15 @@
             <button type="button" wire:click="newEntry" class="btn btn-sm btn-outline--primary cuModalBtn" data-modal_title="@lang('Add New Bank')">
                 <i class="las la-plus"></i>@lang('Add New')
             </button>
+            <button type="button" wire:click="savePdf" class="btn btn-sm btn--primary" data-modal_title="@lang('Download PDF')">
+                <i
+                    class="la la-download"></i>@lang('Download PDF')
+                <span wire:loading wire:target="savePdf">
+                    <i class="spinner-border  spinner-border-sm  text--primary"></i>
+
+                </span>
+            </button>
+
             @endpermit
         </div>
     </div>

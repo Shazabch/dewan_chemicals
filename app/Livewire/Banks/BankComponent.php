@@ -3,7 +3,9 @@
 namespace App\Livewire\Banks;
 
 use App\Models\Bank;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 
 class BankComponent extends Component
@@ -36,6 +38,30 @@ class BankComponent extends Component
         $this->resetForm();
         $this->pageTitle = 'All Banks';
     }
+    public function savePdf()
+    {
+
+        $banks =  Bank::searchable(['name', 'account_number', 'account_holder', 'raast_id'])->orderBy('id', 'desc')->get();
+        $directory = 'banks_pdf';
+        // Generate PDF
+        $pdf = Pdf::loadView('pdf.banks.list', [
+            'pageTitle' => $this->pageTitle . ' Invoice',
+            'banks' => $banks,
+        ])->setOption('defaultFont', 'Arial');
+
+        // Ensure the directory exists
+        if (!Storage::disk('public')->exists($directory)) {
+            Storage::disk('public')->makeDirectory($directory);
+        }
+        $filename = 'pdf_' . now()->format('Ymd_His') . '.pdf'; // Unique filename
+        $filepath = $directory . '/' . $filename;
+
+        // Save the PDF to storage
+        Storage::disk('public')->put($filepath, $pdf->output());
+
+        $this->dispatch('notify', status: 'success', message: 'PDF generated successfully!');
+        return response()->download(storage_path('app/public/' . $filepath), $filename);
+    }
 
     public function editEntry($id)
     {
@@ -47,7 +73,6 @@ class BankComponent extends Component
     {
         $this->resetForm();
         $this->dispatch('open-modal', ['modalId' => 'bankModal']);
-
     }
     public function resetForm()
     {
@@ -75,17 +100,16 @@ class BankComponent extends Component
         $this->resetForm();
         $this->dispatch('notify', status: 'success', message: 'Bank created successfully');
         $this->dispatch('close-modal');
-
     }
     public function confirmDelete($bankId)
-{
+    {
 
-    $this->dispatcht('swal:confirm', [
-        'bankId' => $bankId,
-        'title' => 'Are you sure?',
-        'text' => "You won't be able to revert this!",
-    ]);
-}
+        $this->dispatcht('swal:confirm', [
+            'bankId' => $bankId,
+            'title' => 'Are you sure?',
+            'text' => "You won't be able to revert this!",
+        ]);
+    }
 
     public function deleteEntry($id)
     {
@@ -101,7 +125,7 @@ class BankComponent extends Component
 
     public function render()
     {
-        $banks =  Bank::searchable(['name', 'account_number' , 'account_holder' , 'raast_id'])->orderBy('id', 'desc')->paginate(getPaginate());
+        $banks =  Bank::searchable(['name', 'account_number', 'account_holder', 'raast_id'])->orderBy('id', 'desc')->paginate(getPaginate());
         return view('livewire.banks.bank-component')->with([
             'banks' => $banks,
         ]);

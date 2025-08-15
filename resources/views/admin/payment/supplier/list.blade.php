@@ -12,12 +12,13 @@
 
                     <div class="d-flex flex-column flex-wrap">
                         <span class="text-end">
+                            {{ showAmount($supplier->totalPayableAmount()) }}
+                        </span>
+                        <span class="text-end">
                             {{ showAmount($supplier->totalReceivableAmount()) }}
                         </span>
 
-                        <span class="text-end">
-                            {{ showAmount($supplier->totalPayableAmount()) }}
-                        </span>
+
                     </div>
                 </div>
 

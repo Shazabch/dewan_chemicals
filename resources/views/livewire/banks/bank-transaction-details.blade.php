@@ -27,23 +27,30 @@
                     type="text"
                     class="form-control"
                     placeholder="Search by Source or Data Model"
-                    wire:model.live="search"
-                >
+                    wire:model.live="search">
             </div>
 
             {{-- Clear All --}}
             @if($search || $startDate || $endDate)
-                <button class="btn btn-outline--primary" wire:click="clearFilters">
-                    <i class="fas fa-times me-1"></i> Clear All
-                </button>
+            <button class="btn btn-outline--primary" wire:click="clearFilters">
+                <i class="fas fa-times me-1"></i> Clear All
+            </button>
             @endif
+            <button type="button" wire:click="savePdf" class="btn btn-sm btn--primary" data-modal_title="@lang('Download PDF')">
+                <i
+                    class="la la-download"></i>@lang('Download PDF')
+                <span wire:loading wire:target="savePdf">
+                    <i class="spinner-border  spinner-border-sm  text--primary"></i>
+
+                </span>
+            </button>
         </div>
     </div>
 
 
-    <div class="table-responsive table-responsive--lg" >
-        <table class="table table--light style--two bg-white" >
-            <thead >
+    <div class="table-responsive table-responsive--lg">
+        <table class="table table--light style--two bg-white">
+            <thead>
                 <tr>
                     <th>S.No.</th>
                     <th>Opening Balance</th>
@@ -57,18 +64,18 @@
             </thead>
             <tbody>
                 @foreach($transactions as $index => $transaction)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ showAmount($transaction->opening_balance) }}</td>
-                        <td>{{ showAmount($transaction->closing_balance) }}</td>
-                        <td>{{ showAmount($transaction->debit) }}</td>
-                        <td>{{ showAmount($transaction->credit) }}</td>
-                        <td>{{ showAmount($transaction->amount) }}</td>
-                        <td>
-                            <a href="#" wire:click="redirectDataModel({{ $transaction->module_id }},'{{ $transaction->data_model }}')">{{ $transaction->source }}</a>
-                        </td>
-                        <td>{{ showDateTime($transaction->created_at, 'd M, Y') }}</td>
-                    </tr>
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ showAmount($transaction->opening_balance) }}</td>
+                    <td>{{ showAmount($transaction->closing_balance) }}</td>
+                    <td>{{ showAmount($transaction->debit) }}</td>
+                    <td>{{ showAmount($transaction->credit) }}</td>
+                    <td>{{ showAmount($transaction->amount) }}</td>
+                    <td>
+                        <a href="#" wire:click="redirectDataModel({{ $transaction->module_id }},'{{ $transaction->data_model }}')">{{ $transaction->source }}</a>
+                    </td>
+                    <td>{{ showDateTime($transaction->created_at, 'd M, Y') }}</td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
