@@ -80,12 +80,12 @@ class SupplierController extends Controller
                 if ($transactionType == 'payment') { // Money Out (Paying a bill/advance)
                     $creditAmount = $total_amount;
                     $debitAmount = 0.00;
-                    $source = 'Payment to Supplier';
+                    $source = 'Advance to Supplier';
                     $closingBalance = $openingBalance - $creditAmount;
                 } else { // 'receive' -> Money In (Receiving a refund)
                     $debitAmount = $total_amount;
                     $creditAmount = 0.00;
-                    $source = 'Refund from Supplier';
+                    $source = 'Advance from Supplier';
                     $closingBalance = $openingBalance + $debitAmount;
                 }
 

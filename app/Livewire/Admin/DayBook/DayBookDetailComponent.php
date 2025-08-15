@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Admin\DayBook;
 
+use App\Models\CustomerTransaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\DailyBookDetail;
+use App\Models\SupplierTransaction;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Barryvdh\DomPDF\PDF as DomPDFPDF;
 use Illuminate\Support\Facades\Storage;
@@ -128,6 +130,21 @@ class DayBookDetailComponent extends Component
                 break;
             case 'Stock':
                 return redirect()->to('/admin/services/stock-in/?module_id=' . $id . '#module_id_' . $id);
+                break;
+            case 'CustomerTransaction':
+                $customerTransaction = CustomerTransaction::find($id);
+                if ($customerTransaction) {
+                    $customerId = $customerTransaction->customer_id;
+                    return redirect()->to('/admin/customer/view/' . $customerId . '?module_id=' . $id . '#module_id_' . $id);
+                }
+                break;
+            case 'SupplierTransaction':
+                $cupplierTransaction = SupplierTransaction::find($id);
+                if ($cupplierTransaction) {
+                    $supplierId = $cupplierTransaction->supplier_id;
+                    return redirect()->to('/admin/supplier/view/' . $supplierId . '?module_id=' . $id . '#module_id_' . $id);
+                }
+
                 break;
         }
     }

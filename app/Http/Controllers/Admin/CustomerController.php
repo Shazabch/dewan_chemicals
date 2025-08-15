@@ -85,7 +85,7 @@ class CustomerController extends Controller
                 } else { // 'payment' -> Money In
                     $creditAmount = $total_amount;
                     $debitAmount = 0.00;
-                    $source = 'Payment Received';
+                    $source = 'Advance Received';
                     $closingBalance = $openingBalance - $creditAmount;
                 }
 

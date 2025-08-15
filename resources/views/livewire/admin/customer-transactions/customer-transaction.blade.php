@@ -75,7 +75,7 @@
                 </thead>
                 <tbody>
                     @forelse($transactions as $index => $transaction)
-                    <tr>
+                    <tr @include('partials.bank-history-color', ['id'=> $transaction->id])>
                         <td>{{ $index + 1 }}</td>
                         <td>{{ $transaction->customer->name ?? 'N/A' }}</td>
                         <td>{{ number_format($transaction->opening_balance, 2) }}</td>
