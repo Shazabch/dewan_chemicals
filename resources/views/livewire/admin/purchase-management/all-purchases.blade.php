@@ -216,7 +216,7 @@
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group">
                                     <label>@lang('Invoice No:')</label>
-                                    <input class="form-control" name="invoice_no" readonly type="text" wire:model="invoice_no"
+                                    <input class="form-control" name="invoice_no"  type="text" wire:model="invoice_no"
                                         required>
                                 </div>
                             </div>

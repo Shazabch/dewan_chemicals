@@ -6,12 +6,13 @@ use App\Models\CustomerTransaction as ModalCustomerTransaction;
 use App\Models\Customer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\ReversesCustomerTransaction;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class CustomerTransaction extends Component
 {
-    use WithPagination;
+    use WithPagination, ReversesCustomerTransaction;
 
     public $customerId;
     public $customer;
@@ -19,6 +20,7 @@ class CustomerTransaction extends Component
     public $perPage = 20;
     public $startDate;
     public $endDate;
+
 
 
 
@@ -96,6 +98,28 @@ class CustomerTransaction extends Component
 
         $this->dispatch('notify', status: 'success', message: 'Customer PDF generated successfully!');
         return response()->download(storage_path('app/public/' . $filepath), $filename);
+    }
+    public function confirmReverse($id)
+    {
+        // We dispatch the event that our JavaScript listener is waiting for.
+        $this->dispatch('confirmReverse', id: $id);
+    }
+    public function reverseTransaction($id,$reason)
+    {
+        $transaction = ModalCustomerTransaction::find($id);
+
+        if (!$transaction) {
+            $this->dispatch('notify', type: 'error', message: 'Transaction not found.');
+            return;
+        }
+
+        try {
+            $this->reverseCustomerTransaction($transaction,$reason);
+            $this->dispatch('notify', type: 'success', message: 'Transaction reversed successfully!');
+        } catch (\Exception $e) {
+
+            $this->dispatch('notify', type: 'error', message: 'Error: ' . $e->getMessage());
+        }
     }
 
 

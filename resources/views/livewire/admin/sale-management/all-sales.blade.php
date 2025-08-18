@@ -214,7 +214,7 @@
                         <div class="row mb-3">
                             <div class="col-xl-3 col-sm-6">
                                 <label>@lang('Invoice No.')</label>
-                                <input type="text" class="form-control" wire:model="invoice_no" readonly>
+                                <input type="text" class="form-control" wire:model="invoice_no" >
                                 @error('invoice_no') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
 

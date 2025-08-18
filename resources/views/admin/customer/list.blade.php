@@ -378,7 +378,7 @@ $params = request()->all();
             let customerName = $(this).data('customer_name');
 
             modal.find('input[name=customer_id]').val(customerId);
-            modal.find('.modal-title').text(`@lang('Pay Advance to') ${customerName}`);
+            modal.find('.modal-title').text(`@lang('Advance From') ${customerName}`);
 
             modal.find('form')[0].reset();
 

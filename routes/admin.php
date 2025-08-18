@@ -308,6 +308,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
 
         Route::get('notification-log/{id}', 'notificationLog')->name('notification.log');
         Route::get('notification/history', 'notificationHistory')->name('notification.history');
+        Route::post('transaction/{transaction}/reverse', 'reverseTransaction')->name('transaction.reverse');
     });
 
     Route::get('customer/view/{id}', function ($id) {

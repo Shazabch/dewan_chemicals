@@ -352,7 +352,7 @@ $params = request()->all();
             let supplierName = $(this).data('supplier_name');
 
             modal.find('input[name=supplier_id]').val(supplierId); // Changed to supplier_id
-            modal.find('.modal-title').text(`@lang('Pay Advance to') ${supplierName}`);
+            modal.find('.modal-title').text(`@lang('Advance to') ${supplierName}`);
 
             modal.find('form')[0].reset();
             $('#paymentMethodSelect').trigger('change');
