@@ -5,6 +5,7 @@ namespace App\Livewire\Admin\DayBook;
 use App\Models\CustomerTransaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\DailyBookDetail;
+use App\Models\Salary;
 use App\Models\SupplierTransaction;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Barryvdh\DomPDF\PDF as DomPDFPDF;
@@ -143,6 +144,14 @@ class DayBookDetailComponent extends Component
                 if ($cupplierTransaction) {
                     $supplierId = $cupplierTransaction->supplier_id;
                     return redirect()->to('/admin/supplier/view/' . $supplierId . '?module_id=' . $id . '#module_id_' . $id);
+                }
+
+                break;
+            case 'Salary':
+                $salary = Salary::find($id);
+                if ($salary) {
+                    $staff_id = $salary->staff_id;
+                    return redirect()->to('/admin/staff/' . $staff_id . '/salary?module_id=' . $id . '#module_id_' . $id);
                 }
 
                 break;

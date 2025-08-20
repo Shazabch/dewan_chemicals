@@ -5,6 +5,7 @@ namespace App\Livewire\Banks;
 use App\Models\Bank;
 use App\Models\BankTransaction;
 use App\Models\CustomerTransaction;
+use App\Models\Salary;
 use App\Models\SupplierTransaction;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -29,12 +30,12 @@ class BankTransactionDetails extends Component
 
         $this->bank = Bank::findOrFail($bankId);
     }
-     public function savePdf()
+    public function savePdf()
     {
 
 
         $directory = 'banks_pdf';
-         $transactions = BankTransaction::where('bank_id', $this->bankId)
+        $transactions = BankTransaction::where('bank_id', $this->bankId)
             ->where(function ($query) {
                 $query->when($this->search, function ($q) {
                     $q->where('source', 'like', '%' . $this->search . '%')
@@ -60,7 +61,7 @@ class BankTransactionDetails extends Component
         if (!Storage::disk('public')->exists($directory)) {
             Storage::disk('public')->makeDirectory($directory);
         }
-        $filename = 'pdf_'.$this->bankId. now()->format('Ymd_His') . '.pdf'; // Unique filename
+        $filename = 'pdf_' . $this->bankId . now()->format('Ymd_His') . '.pdf'; // Unique filename
         $filepath = $directory . '/' . $filename;
 
         // Save the PDF to storage
@@ -143,6 +144,14 @@ class BankTransactionDetails extends Component
                 if ($cupplierTransaction) {
                     $supplierId = $cupplierTransaction->supplier_id;
                     return redirect()->to('/admin/supplier/view/' . $supplierId . '?module_id=' . $id . '#module_id_' . $id);
+                }
+
+                break;
+            case 'Salary':
+                $salary = Salary::find($id);
+                if ($salary) {
+                    $staff_id = $salary->staff_id;
+                    return redirect()->to('/admin/staff/' . $staff_id . '/salary?module_id=' . $id . '#module_id_' . $id);
                 }
 
                 break;

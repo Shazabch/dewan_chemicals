@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Constants\Status;
 use App\Traits\GlobalStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -36,5 +37,10 @@ class Admin extends Authenticatable
             $html = '<span><span class="badge badge--warning">' . trans('Banned') . '</span></span>';
         }
         return $html;
+    }
+    public function salaries(): HasMany
+    {
+
+        return $this->hasMany(Salary::class, 'staff_id')->orderBy('pay_period_start', 'desc');
     }
 }

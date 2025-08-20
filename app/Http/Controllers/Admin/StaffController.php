@@ -19,7 +19,11 @@ class StaffController extends Controller
         $roles     = Role::all();
         return view('admin.staff.index', compact('pageTitle', 'allStaff', 'roles'));
     }
-
+    public function salary(Admin $user)
+    {
+        $pageTitle = '';
+        return view('admin.staff.salary', ['staff' => $user,'pageTitle' =>$pageTitle]);
+    }
     public function status($id)
     {
         return Admin::changeStatus($id);

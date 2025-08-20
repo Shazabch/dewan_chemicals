@@ -68,11 +68,13 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('download-attachments/{file_hash}', 'downloadAttachment')->name('download.attachment');
     });
 
+
     Route::controller('StaffController')->prefix('staff')->name('staff.')->group(function () {
         Route::get('all', 'index')->name('index');
         Route::post('save/{id?}', 'save')->name('save');
         Route::post('switch-status/{id}', 'status')->name('status');
         Route::get('login/{id}', 'login')->name('login');
+        Route::get('{user}/salary', 'salary')->name('salary');
     });
 
     Route::controller('RolesController')->prefix('roles')->name('roles.')->group(function () {
@@ -359,6 +361,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::post('update/{id}', 'update')->name('update');
         Route::get('search-product', 'searchProduct')->name('search.product');
     });
+
 
 
     //Expense
