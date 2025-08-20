@@ -226,8 +226,8 @@ class AllReturnPurchases extends Component
     }
     public function updatedFine()
     {
-        $this->fine = (float) $this->fine;
-        if ($this->fine < 0) $this->fine = 0;
+        // $this->fine = (float) $this->fine;
+        // if ($this->fine < 0) $this->fine = 0;
         $this->calculateTotals();
     }
     public function updatedReturnExpense()
@@ -255,7 +255,7 @@ class AllReturnPurchases extends Component
         }
 
         $this->receivableAmount = $this->grandTotal - $this->discount;
-        $this->receivableAmount += $this->fine + $this->return_expense;
+        $this->receivableAmount += (float)$this->fine + (float)$this->return_expense;
 
         if ($this->editMode && $this->purchaseReturnInstance) {
             $this->dueAmount = $this->receivableAmount - $this->purchaseReturnInstance->received_amount;

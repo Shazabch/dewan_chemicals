@@ -24,7 +24,7 @@ class AllReturnSales extends Component
     public $return_date;
     public $products = []; // This will store items for the return
     public $discount = 0;
-    public $fine = 0;
+    public $fine=0;
     public $return_expense = 0;
     public $note = '';
 
@@ -185,8 +185,8 @@ class AllReturnSales extends Component
     }
     public function updatedFine()
     {
-        $this->fine = (float) $this->fine;
-        if ($this->fine < 0) $this->fine = 0;
+        // $this->fine = (float) $this->fine;
+        // if ($this->fine < 0) $this->fine = 0;
         $this->calculateTotals();
     }
         public function updatedReturnExpense()
@@ -214,7 +214,7 @@ class AllReturnSales extends Component
         }
 
         $this->payableAmount = $this->grandTotal - $this->discount;
-         $this->payableAmount+=$this->fine + $this->return_expense;
+         $this->payableAmount+=(float)$this->fine + (float)$this->return_expense;
         if ($this->editMode) {
             $this->dueAmount = $this->payableAmount - $this->paidAmount;
         } else {
