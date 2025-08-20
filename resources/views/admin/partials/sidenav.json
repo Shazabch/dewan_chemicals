@@ -56,7 +56,8 @@
         "title": "Manage Sales",
         "icon": "la la-shopping-cart",
         "menu_active": [
-            "admin.sale*"
+            "admin.manage_sale",
+            "admin.sale.return*"
         ],
         "submenu": [
             {
@@ -70,7 +71,7 @@
                 "title": "All Sales",
                 "route_name": "admin.manage_sale",
                 "menu_active": [
-                    "admin.sale.index",
+                    "admin.manage_sale",
                     "admin.sale.create",
                     "admin.sale.edit"
                 ]
@@ -97,7 +98,8 @@
         "title": "Manage Purchases",
         "icon": "la la-shopping-bag",
         "menu_active": [
-            "admin.purchase*"
+            "admin.manage_purchase*",
+            "admin.purchase.return*"
         ],
         "submenu": [
             {
@@ -159,7 +161,7 @@
         "title": "Banks Management",
         "icon": "las la-university",
         "route_name": "admin.bank.index",
-        "menu_active": "admin.bank.index"
+        "menu_active": "admin.bank*"
     },
     "manage_products": {
         "title": "Manage Products",
@@ -241,7 +243,8 @@
         "menu_active": [
             "admin.customer.index",
             "admin.customer.payment.*",
-            "admin.customer.notification.*"
+            "admin.customer.notification.*",
+            "admin.customer*"
         ]
     },
     "suppliers": {
@@ -256,7 +259,7 @@
         "route_name": "admin.supplier.index",
         "menu_active": [
             "admin.supplier.index",
-            "admin.supplier.payment.*"
+            "admin.supplier*"
         ]
     },
     "manage_staff": {
@@ -324,7 +327,8 @@
         "title": "Manage Expenses",
         "icon": "la la-wallet",
         "menu_active": [
-            "admin.expense.*"
+            "admin.manage_expense_type*",
+            "admin.manage_expense"
         ],
         "submenu": [
             {
@@ -349,7 +353,7 @@
                 ],
                 "title": "Expenses",
                 "route_name": "admin.manage_expense",
-                "menu_active": "manage_expense"
+                "menu_active": "admin.manage_expense"
             }
         ]
     },
@@ -358,7 +362,12 @@
         "header": "Services",
         "icon": "la la-cogs",
         "menu_active": [
-            "admin.services.*"
+            "admin.services.*",
+            "admin.manage_stock_details",
+            "admin.manage_stock_in",
+            "admin.manage_stock_out",
+            "admin.manage_stock_transfer",
+            "admin.stock_client_details"
         ],
         "submenu": [
             {
