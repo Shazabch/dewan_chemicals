@@ -19,7 +19,8 @@
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 col-xl-4">
                     <h3 class="mb-1 "><strong>Total :</strong> {{ number_format($this->stockTotalAmount(),2) }}</h3>
-
+                    <h3 class="mb-1 "><strong>Received :</strong> {{ number_format($selectedStock->recieved_amount,2) }}</h3>
+                    <h3 class="mb-1 "><strong>Due :</strong> {{ number_format($selectedStock->due_amount,2) }}</h3>
                 </div>
             </div>
         </div>

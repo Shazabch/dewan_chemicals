@@ -717,17 +717,19 @@ class ManageStock extends Component
         $stock->bank_id = $this->bankId;
         $stock->save();
 
+        $dataModal=$this->stock_type=='in' ? 'StockIn' : 'StockOut';
+
         $this->handlePaymentTransaction(
             $this->modal_payment_method,
             $amount_cash,
             $amount_bank,
             $this->bankId,
             $stock->id,
-            'Stock',
+            $dataModal,
             'debit'
         );
 
-        $this->handleDailyBookEntries($amount_cash, $amount_bank, 'debit', $this->modal_payment_method, 'Stock', $stock->id);
+        $this->handleDailyBookEntries($amount_cash, $amount_bank, 'debit', $this->modal_payment_method, $dataModal, $stock->id);
 
         session()->flash('success', 'Payment updated successfully!');
         $this->dispatch('notify', status: 'success', message: 'Payment updated successfully!');

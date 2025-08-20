@@ -78,7 +78,7 @@
                                             </a>
                                             @endpermit
                                             @permit(['admin.stock_client_payment'])
-                                            @if($stock_type=='in')
+                                            {{-- @if($stock_type=='in') --}}
                                             <button type="button"
                                                 class="btn btn-sm btn-outline--info ms-1 dropdown-toggle"
                                                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -99,7 +99,7 @@
                                                     </a>
                                                 </li>
                                             </div>
-                                            @endif
+                                            {{-- @endif --}}
                                             @endpermit
                                         </div>
                                     </td>

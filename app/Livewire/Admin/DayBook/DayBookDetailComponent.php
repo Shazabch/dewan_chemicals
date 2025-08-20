@@ -132,6 +132,12 @@ class DayBookDetailComponent extends Component
             case 'Stock':
                 return redirect()->to('/admin/services/stock-in/?module_id=' . $id . '#module_id_' . $id);
                 break;
+            case 'StockIn':
+                return redirect()->to('/admin/services/stock-in/?module_id=' . $id . '#module_id_' . $id);
+                break;
+            case 'StockOut':
+                return redirect()->to('/admin/services/stock-out/?module_id=' . $id . '#module_id_' . $id);
+                break;
             case 'CustomerTransaction':
                 $customerTransaction = CustomerTransaction::find($id);
                 if ($customerTransaction) {
