@@ -24,6 +24,7 @@
                 <th>@lang('Name')</th>
                 <th>@lang('SKU')</th>
                 <th>@lang('Quantity')</th>
+                <th>@lang('Weight')</th>
                 <th>@lang('Unit Price')</th>
                 <th>@lang('Total')</th>
             </tr>
@@ -34,7 +35,8 @@
                     <td>{{ $loop->iteration }} </td>
                     <td class="fw-bold">{{ $return->product->name }}</td>
                     <td>{{ $return->product->sku }} </td>
-                    <td>{{ $return->quantity }} {{ $return->product->unit->name }} </td>
+                    <td>{{ $return->quantity }} @if($return->product->unit->name && strtolower($return->product->unit->name)!='kg') {{ $return->product->unit->name}} @endif </td>
+                    <td>{{ $return->net_weight ?? 0 }} @if($return->product->unit->name && strtolower($return->product->unit->name)=='kg') {{ $return->product->unit->name}} @endif</td>
                     <td>{{ showAmount($return->price) }}</td>
                     <td>{{ showAmount($return->total) }}</td>
                 </tr>

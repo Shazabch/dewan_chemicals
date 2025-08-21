@@ -35,8 +35,8 @@
                     <td>{{ $loop->iteration }} </td>
                     <td>{{ $value->product->name }}</td>
                     <td>{{ $value->product->sku }} </td>
-                    <td>{{ $value->quantity }} </td>
-                    <td>{{ $value->net_weight . ' ' . $value->product->unit->name }} </td>
+                     <td>{{ $value->quantity }} @if($value->product->unit->name && strtolower($value->product->unit->name)!='kg') {{ $value->product->unit->name}} @endif </td>
+                    <td>{{ $value->net_weight ?? 0 }} @if($value->product->unit->name && strtolower($value->product->unit->name)=='kg') {{ $value->product->unit->name}} @endif</td>
                     <td>{{ showAmount($value->price) }}</td>
                     <td>{{ showAmount($value->total) }}</td>
                 </tr>

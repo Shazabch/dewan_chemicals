@@ -147,7 +147,7 @@ class AllReturnSales extends Component
             if ($product['quantity'] < 0) $product['quantity'] = 0;
             if ($product['quantity'] > $product['sale_quantity']) {
 
-                $product['quantity'] = $product['sale_quantity']; // Cap it
+                // $product['quantity'] = $product['sale_quantity']; // Cap it
             }
             if ($productUnit === 'kg' || $productUnit === 'kilogram') {
             } else {
@@ -167,7 +167,7 @@ class AllReturnSales extends Component
             if ($product['net_weight'] < 0) $product['net_weight'] = 0;
             if ($product['net_weight'] > $product['sale_weight']) {
 
-                $product['net_weight'] = $product['sale_weight']; // Cap it
+                // $product['net_weight'] = $product['sale_weight']; // Cap it
             }
         }
 
@@ -239,8 +239,8 @@ class AllReturnSales extends Component
         }
 
         if ($this->totalPriceFromProducts <= 0 && !$this->editMode) { // Allow update to 0 quantity for an item.
-            $this->addError('products', 'Sale return quantity/weight items is empty or total is zero.');
-            return;
+            // $this->addError('products', 'Sale return quantity/weight items is empty or total is zero.');
+            // return;
         }
 
 
@@ -259,12 +259,12 @@ class AllReturnSales extends Component
                 $saleDetail = $this->sale->saleDetails->where('product_id', $requestedProduct->product_id)->first();
 
                 if ($saleDetail && $requestedProduct->quantity > $saleDetail->quantity) {
-                    $this->addError("products.{$index}.quantity", 'Return quantity exceeds sale quantity.');
-                    return;
+                    // $this->addError("products.{$index}.quantity", 'Return quantity exceeds sale quantity.');
+                    // return;
                 }
                 if ($saleDetail && $requestedProduct->net_weight > $saleDetail->net_weight) {
-                    $this->addError("products.{$index}.net_weight", 'Return weight exceeds sale weight.');
-                    return;
+                    // $this->addError("products.{$index}.net_weight", 'Return weight exceeds sale weight.');
+                    // return;
                 }
 
                 if ($returnDetail) { // Existing item in return
@@ -359,10 +359,20 @@ class AllReturnSales extends Component
                 }
 
                 $productModel              = Product::find($productItem->product_id);
-                if ($productModel) {
+                if ($productModel && $productModel->total_sale>0) {
                     $productModel->total_sale -= $quantityChangeForStock; // Decrease sale count if returned, increase if return is reduced
                     $productModel->save();
                 }
+            }
+             // Update stock and product total sale
+            if ($net_weightChangeForStock != 0) {
+                $stock    = $productStocks->where('product_id', $productItem->product_id)->first();
+                if ($stock) {
+                    $stock->net_weight   += $net_weightChangeForStock; // Add to stock if returned, subtract if return is reduced
+                    $stock->save();
+                }
+
+
             }
         }
         // Delete details that were removed

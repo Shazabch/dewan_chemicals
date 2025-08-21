@@ -182,12 +182,12 @@ class AllReturnPurchases extends Component
             if ($product['quantity'] < 0) $product['quantity'] = 0;
 
             if ($product['quantity'] > $product['purchase_quantity']) {
-                $this->addError("products.{$index}.quantity", 'Return Qty cannot exceed Purchased Qty.');
-                $product['quantity'] = $product['purchase_quantity'];
+                // $this->addError("products.{$index}.quantity", 'Return Qty cannot exceed Purchased Qty.');
+                // $product['quantity'] = $product['purchase_quantity'];
             }
             if ($product['quantity'] > $product['stock_quantity']) {
-                $this->addError("products.{$index}.quantity", 'Return Qty cannot exceed current Stock Qty.');
-                $product['quantity'] = $product['stock_quantity'];
+                // $this->addError("products.{$index}.quantity", 'Return Qty cannot exceed current Stock Qty.');
+                // $product['quantity'] = $product['stock_quantity'];
             }
             // For non-kg items, quantity determines total directly. For kg, net_weight does.
             if ($productUnit !== 'kg' && $productUnit !== 'kilogram') {
@@ -198,12 +198,12 @@ class AllReturnPurchases extends Component
             if ($product['net_weight'] < 0) $product['net_weight'] = 0;
 
             if ($product['net_weight'] > $product['purchase_weight']) {
-                $this->addError("products.{$index}.net_weight", 'Return Weight cannot exceed Purchased Weight.');
-                $product['net_weight'] = $product['purchase_weight'];
+                // $this->addError("products.{$index}.net_weight", 'Return Weight cannot exceed Purchased Weight.');
+                // $product['net_weight'] = $product['purchase_weight'];
             }
             if ($product['net_weight'] > $product['stock_weight']) {
-                $this->addError("products.{$index}.net_weight", 'Return Weight cannot exceed current Stock Weight.');
-                $product['net_weight'] = $product['stock_weight'];
+                // $this->addError("products.{$index}.net_weight", 'Return Weight cannot exceed current Stock Weight.');
+                // $product['net_weight'] = $product['stock_weight'];
             }
             // For kg items, net_weight determines total.
             if ($productUnit === 'kg' || $productUnit === 'kilogram') {
@@ -317,21 +317,21 @@ class AllReturnPurchases extends Component
 
             if ($productUnit === 'kg' || $productUnit === 'kilogram') {
                 if (($requestedProduct->net_weight ?? 0) > ($originalPurchaseDetail->net_weight ?? 0)) {
-                    $this->addError("products.{$index}.net_weight", "Cannot return more weight of {$requestedProduct->name} than purchased.");
-                    return;
+                    // $this->addError("products.{$index}.net_weight", "Cannot return more weight of {$requestedProduct->name} than purchased.");
+                    // return;
                 }
                 if ($currentStock && ($requestedProduct->net_weight ?? 0) > ($currentStock->net_weight ?? 0)) {
-                    $this->addError("products.{$index}.net_weight", "Return weight for {$requestedProduct->name} exceeds current stock weight ({$currentStock->net_weight} kg).");
-                    return;
+                    // $this->addError("products.{$index}.net_weight", "Return weight for {$requestedProduct->name} exceeds current stock weight ({$currentStock->net_weight} kg).");
+                    // return;
                 }
             } else {
                 if (($requestedProduct->quantity ?? 0) > ($originalPurchaseDetail->quantity ?? 0)) {
-                    $this->addError("products.{$index}.quantity", "Cannot return more units of {$requestedProduct->name} than purchased.");
-                    return;
+                    // $this->addError("products.{$index}.quantity", "Cannot return more units of {$requestedProduct->name} than purchased.");
+                    // return;
                 }
                 if ($currentStock && ($requestedProduct->quantity ?? 0) > ($currentStock->quantity ?? 0)) {
-                    $this->addError("products.{$index}.quantity", "Return quantity for {$requestedProduct->name} exceeds current stock ({$currentStock->quantity}).");
-                    return;
+                    // $this->addError("products.{$index}.quantity", "Return quantity for {$requestedProduct->name} exceeds current stock ({$currentStock->quantity}).");
+                    // return;
                 }
             }
         }
