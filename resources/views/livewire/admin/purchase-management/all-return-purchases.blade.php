@@ -144,7 +144,7 @@
                                             <label> @lang('Fine')</label>
                                             <div class="input-group">
                                                 <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                                <input class="form-control" wire:model.live="fine" type="number" step="any">
+                                                <input class="form-control" wire:model.live.debounce.500ms="fine" type="number" step="any">
                                             </div>
                                             @error('fine') <span class="text-danger">{{ $message }}</span> @enderror
                                         </div>
@@ -154,7 +154,7 @@
                                             <label> @lang('Return Expense')</label>
                                             <div class="input-group">
                                                 <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                                <input class="form-control" wire:model.live="return_expense" type="number" step="any" min="0">
+                                                <input class="form-control" wire:model.live.debounce.500ms="return_expense" type="number" step="any" min="0">
                                             </div>
                                             @error('return_expense') <span class="text-danger">{{ $message }}</span> @enderror
                                         </div>
