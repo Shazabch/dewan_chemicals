@@ -21,7 +21,7 @@ class ManageStockDetails extends Component
     public $stocks = [];
     public $clientStocks = [];
     public $clientStocktransfersSent = [];
-    public $clientStocktransfersReceived =[];
+    public $clientStocktransfersReceived = [];
     public $searchTerm = '';
     public $searchDetails = '';
     public $startDate = '';
@@ -60,18 +60,22 @@ class ManageStockDetails extends Component
             ->get();
 
         foreach ($suppliers as $supplier) {
-            $this->users[] = [
-                'id' => $supplier->id,
-                'name' => $supplier->name,
-                'model' => 'Supplier',
-            ];
+            if ($this->checkUserActive($supplier->id, 'Supplier')) {
+                $this->users[] = [
+                    'id' => $supplier->id,
+                    'name' => $supplier->name,
+                    'model' => 'Supplier',
+                ];
+            }
         }
         foreach ($clients as $client) {
-            $this->users[] = [
-                'id' => $client->id,
-                'name' => $client->name,
-                'model' => 'Customer',
-            ];
+            if ($this->checkUserActive($supplier->id, 'Customer')) {
+                $this->users[] = [
+                    'id' => $client->id,
+                    'name' => $client->name,
+                    'model' => 'Customer',
+                ];
+            }
         }
     }
     public function loadStockDetails()
@@ -143,6 +147,18 @@ class ManageStockDetails extends Component
 
         $this->showDetails = true;
     }
+    public function checkUserActive($user_id, $user_model)
+    {
+
+        $query = ServiceStockDetail::query();
+        $query->where('user_id', $user_id)->where('user_model', $user_model);
+        $this->selectedStock = $query->get();
+        if ($this->selectedStock->isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
     public function closeDetails()
     {
         $this->showDetails = false;
@@ -188,7 +204,7 @@ class ManageStockDetails extends Component
         if ($this->selectedStock->isEmpty()) {
             // Handle the case where no data is found
 
-             $this->dispatch('notify', status: 'error', message: 'No stock details found for the given user.');
+            $this->dispatch('notify', status: 'error', message: 'No stock details found for the given user.');
             $this->showDetails = false;
             return;
         }
@@ -198,7 +214,7 @@ class ManageStockDetails extends Component
 
         // Validate if user exists
         if (!$this->selectedUser) {
-              $this->dispatch('notify', status: 'error', message: 'User associated with the stock could not be found.');
+            $this->dispatch('notify', status: 'error', message: 'User associated with the stock could not be found.');
 
             $this->showDetails = false;
             return;
@@ -259,7 +275,7 @@ class ManageStockDetails extends Component
             })
             ->get();
     }
-     public function clientStocktransfersReceived()
+    public function clientStocktransfersReceived()
     {
         $this->clientStocktransfersReceived = StockTransfer::with([
             'fromWarehouse',
