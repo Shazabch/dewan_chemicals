@@ -34,7 +34,7 @@ class CustomerController extends Controller
 
         $emptyMessage = 'No customer found';
         $banks = \App\Models\Bank::where('name', '!=', 'Cash')->get(); // Get banks
-        $customers = $this->getCustomers()->paginate(getPaginate());
+        $customers = $this->getCustomers()->paginate(getPaginate(100));
         return view('admin.customer.list', compact('pageTitle', 'customers', 'banks'));
     }
 
@@ -234,7 +234,7 @@ class CustomerController extends Controller
             });
         }
 
-        $users = $customers->orderBy('id', 'desc')->paginate(getPaginate());
+        $users = $customers->orderBy('id', 'desc')->paginate(getPaginate(1));
         return response()->json([
             'success' => true,
             'users'   => $users,

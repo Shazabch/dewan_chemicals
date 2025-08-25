@@ -32,7 +32,7 @@ class SupplierController extends Controller
         $pageTitle = $this->pageTitle;
         $emptyMessage = 'No supplier found';
         $banks = \App\Models\Bank::where('name', '!=', 'Cash')->get();
-        $suppliers = $this->getSuppliers()->paginate(getPaginate());
+        $suppliers = $this->getSuppliers()->paginate(getPaginate(100));
         return view('admin.supplier.index', compact('pageTitle', 'suppliers', 'banks'));
     }
     // ===================================================================
