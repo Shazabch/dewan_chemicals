@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Expense extends Model
 {
     use ActionTakenBy;
+    protected $guarded = [];
 
     public function expenseType()
     {

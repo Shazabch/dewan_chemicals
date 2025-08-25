@@ -186,7 +186,7 @@ class CustomerController extends Controller
         $customer->email   = strtolower(trim($request->email));
         $customer->mobile  = $request->mobile;
         $customer->address = $request->address;
-        $customer->opening_balance = $request->opening_balance;
+        $customer->opening_balance = $request->opening_balance ?? 0;
         $customer->booklet_no = $request->booklet_no;
         $customer->save();
 

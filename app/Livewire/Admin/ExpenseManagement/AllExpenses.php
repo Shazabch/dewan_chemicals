@@ -10,6 +10,7 @@ use App\Models\Action;
 use App\Models\BankTransaction;
 use App\Models\DailyBookDetail;
 use App\Traits\ManagesExpenseTransactions;
+use App\Traits\ReversesExpenseTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Livewire\WithPagination;
@@ -20,7 +21,11 @@ class AllExpenses extends Component
     use WithPagination;
 
     protected string $paginationTheme = 'bootstrap';
-    use ManagesExpenseTransactions;
+    use ManagesExpenseTransactions, ReversesExpenseTransaction {
+
+        ManagesExpenseTransactions::handleDailyBookEntries insteadof ReversesExpenseTransaction;
+        ReversesExpenseTransaction::handleDailyBookEntries as handleReverseDailyBookEntries;
+    }
 
     public $pageTitle = 'All Expenses';
     public $expense_type_id, $date_of_expense, $amount, $note, $bank_id, $expense_id;
@@ -147,6 +152,27 @@ class AllExpenses extends Component
         $this->dispatch('close-modal');
         $this->dispatch('notify', status: 'success', message: 'Expense deleted successfully!');
         $this->deleteId = null;
+    }
+     public function confirmReverse($id)
+    {
+        $this->dispatch('confirmReverse', id: $id);
+    }
+    public function reverseTransaction($id,$reason)
+    {
+        $transaction = Expense::find($id);
+
+        if (!$transaction) {
+            $this->dispatch('notify', type: 'error', message: 'Transaction not found.');
+            return;
+        }
+
+        try {
+            $this->reverseExpenseTransaction($transaction,$reason);
+            $this->dispatch('notify', type: 'success', message: 'Transaction reversed successfully!');
+        } catch (\Exception $e) {
+
+            $this->dispatch('notify', type: 'error', message: 'Error: ' . $e->getMessage());
+        }
     }
 
     public function expenseCSV()

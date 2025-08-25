@@ -47,6 +47,17 @@
                                             onclick="triggerDelete({{ $expense->id }})">
                                             <i class="la la-trash"></i>
                                         </button>
+                                        @if(!$expense->reversed_at)
+                                        <button type="button" class="btn btn-sm btn-outline--danger"
+                                            wire:click="confirmReverse({{ $expense->id }})"
+                                            title="Reverse Transaction">
+                                            <i class="las la-undo"></i> Reverse
+                                        </button>
+                                        @else
+                                        <span class="badge badge--warning">Reversed</span>
+                                        <br>
+                                        <small>{{ showDateTime($expense->reversed_at) }}</small>
+                                        @endif
 
                                     </td>
                                 </tr>
@@ -171,22 +182,22 @@
 @endpush
 @push('script')
 <script>
-     function triggerDelete(expId) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "This will permanently delete the product.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#e3342f',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    @this.set('deleteId', expId); // Set the expense ID to be deleted
-                    @this.call('delete');
-                }
-            });
-        };
+    function triggerDelete(expId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This will permanently delete the product.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e3342f',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                @this.set('deleteId', expId); // Set the expense ID to be deleted
+                @this.call('delete');
+            }
+        });
+    };
     window.addEventListener('open-modal', () => {
         $('#cuModal').modal('show'); // Open the modal
     });
@@ -196,3 +207,58 @@
     });
 </script>
 @endpush
+<script>
+    window.addEventListener('notify', event => {
+        Swal.fire({
+            icon: event.detail.type, // 'success', 'error'
+            title: event.detail.type.toUpperCase(),
+            text: event.detail.message,
+            timer: 2000,
+            showConfirmButton: false
+        });
+    });
+</script>
+<script>
+    (function($) {
+        "use strict";
+
+        window.addEventListener('confirmReverse', event => {
+            const {
+                id
+            } = event.detail[0] || event.detail;
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to reverse this transaction.",
+                icon: 'warning',
+
+                // --- [NEW] Add an input for the reason ---
+                input: 'textarea',
+                inputLabel: 'Reason for Reversal',
+                inputPlaceholder: 'Enter a reason for this reversal (optional)...',
+
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, reverse it!',
+
+                // --- [NEW] Validate the input if needed ---
+                // For example, to make the reason mandatory:
+                // inputValidator: (value) => {
+                //     if (!value) {
+                //         return 'You must provide a reason for the reversal!'
+                //     }
+                // }
+
+            }).then((result) => {
+                // Check if the user confirmed (clicked the 'Yes' button)
+                if (result.isConfirmed) {
+
+                    // --- [MODIFIED] Pass the input value along with the ID ---
+                    // 'result.value' contains the text from the textarea
+                    @this.call('reverseTransaction', id, result.value);
+                }
+            });
+        });
+    })(jQuery);
+</script>
