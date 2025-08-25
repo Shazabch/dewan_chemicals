@@ -11,7 +11,7 @@
                                     <th>@lang('Container NO')</th>
                                     <th>@lang('Vendor / Client')</th>
                                     <th>@lang('Warehouse')</th>
-                                    <th>@lang('Type')</th>
+
                                     <th>@lang('Date')</th>
                                     <th>@lang('Total Amount')</th>
                                     <th>@lang('Received Amount')</th>
@@ -40,9 +40,7 @@
 
                                         {{ $item->warehouse->name }}
                                     </td>
-                                    <td>
-                                        {{ $item->stock_type ? $item->stock_type== 'in' ? 'Stock In' : 'Stock Out' : '' }}
-                                    </td>
+
                                     <td>
                                         @if($item->date)
                                         {{ $item->date }}
