@@ -198,7 +198,7 @@ class AllPurchases extends Component
         $this->supplier_id = $purchase->supplier_id;
         $this->warehouse_id = $purchase->warehouse_id;
 
-        $this->purchase_date = Carbon::createFromFormat('Y-m-d', $purchase->purchase_date)->format('d-m-Y') ; // e.g., 30-06-2025
+        $this->purchase_date = Carbon::createFromFormat('Y-m-d', $purchase->purchase_date)->format('d-m-Y'); // e.g., 30-06-2025
         $this->note = $purchase->note;
         $this->discount = $purchase->discount_amount;
         $this->total_price = $purchase->total_price;
@@ -624,7 +624,7 @@ class AllPurchases extends Component
         $this->modal_invoice_no = $this->paymentPurchase->invoice_no;
         $this->modal_supplier_name = $this->paymentPurchase->supplier()->first()->name;
         $this->modal_payable_amount = $this->paymentPurchase->due_amount;
-        $this->modal_payment_method = $this->paymentPurchase->payment_method;
+        $this->modal_payment_method = $this->paymentPurchase->payment_method ?? 'cash';
         $this->modal_rec_bank = 0.00;
         $this->modal_paid_amount = 0.00;
     }
@@ -817,6 +817,9 @@ class AllPurchases extends Component
         $this->resetExcept('purchaseId');
         $this->loadPurchases();
         $this->dispatch('notify', status: 'success', message: $notification);
+        $this->js('setTimeout(() => window.location.reload(), 1200)');
+
+        return; // important: stop here, don’t also return a redirect
     }
 
     public function openExpenseModal($id)

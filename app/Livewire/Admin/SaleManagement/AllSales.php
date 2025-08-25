@@ -760,7 +760,7 @@ class AllSales extends Component
         $this->modal_invoice_no = $this->paymentSale->invoice_no;
         $this->modal_customer_name = $this->paymentSale->customer()->first()->name;
         $this->modal_receivable_amount = $this->paymentSale->due_amount;
-        $this->modal_payment_method = $this->paymentSale->payment_method;
+        $this->modal_payment_method = $this->paymentSale->payment_method ?? 'cash';
         $this->modal_rec_bank = 0.00;
         $this->modal_rec_amount = 0.00;
     }
@@ -977,6 +977,9 @@ class AllSales extends Component
         $this->resetExcept('saleId');
         $this->loadSales();
         $this->dispatch('notify', status: 'success', message: $notification);
+         $this->js('setTimeout(() => window.location.reload(), 1200)');
+
+        return; // important: stop here, don’t also return a redirect
     }
 
 
