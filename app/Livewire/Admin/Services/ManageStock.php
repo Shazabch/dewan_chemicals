@@ -147,7 +147,7 @@ class ManageStock extends Component
                 $endDate = Carbon::parse($this->endDate)->endOfDay();
                 $query->whereBetween('date', [$startDate, $endDate]);
             })
-            ->orderBy('tracking_id','desc')
+            ->orderBy('tracking_id', 'desc')
             ->get();
     }
     public function createStock()
@@ -183,6 +183,7 @@ class ManageStock extends Component
         }
         if ($name === 'warehouse_id') {
             $this->getProducts();
+            $this->users = $this->loadUsers();
         }
         if (str_starts_with($name, 'stockItems.')) {
             $index = explode('.', $name)[1];
@@ -540,23 +541,38 @@ class ManageStock extends Component
         // Add Suppliers to the array with a unique identifier
         foreach ($suppliers as $supplier) {
             // Key: "Supplier-12", Value: "Supplier Name (Vendor)"
-
-            $formattedUsers[] = [
-                'id'   => 'Supplier-' . $supplier->id,
-                'text' => $supplier->name . ' (Supplier)',
-            ];
+            if ($this->checkUserActive($supplier->id, 'Supplier')) {
+                $formattedUsers[] = [
+                    'id'   => 'Supplier-' . $supplier->id,
+                    'text' => $supplier->name . ' (Supplier)',
+                ];
+            }
         }
 
         // Add Clients to the array with a unique identifier
         foreach ($clients as $client) {
             // Key: "Customer-8", Value: "Client Name (Client)"
-            $formattedUsers[] = [
-                'id'   => 'Customer-' . $client->id,
-                'text' => $client->name . ' (Customer)',
-            ];
+            if ($this->checkUserActive($client->id, 'Customer')) {
+                $formattedUsers[] = [
+                    'id'   => 'Customer-' . $client->id,
+                    'text' => $client->name . ' (Customer)',
+                ];
+            }
         }
 
         return $formattedUsers;
+    }
+    public function checkUserActive($user_id, $user_model)
+    {
+
+
+        $selectedStock = $this->checkAvailableStockForWere($user_id, $user_model);
+
+        if ($selectedStock==0 && $this->stock_type=='out') {
+            return false;
+        } else {
+            return true;
+        }
     }
     public function updateServiceStock($product_id, $quantity, $stock_type, $warehouse_id, $user_id, $user_model, $net_weight)
     {
@@ -602,6 +618,18 @@ class ManageStock extends Component
                 $stockDetail->decrement('net_weight', $net_weight);
             }
         }
+    }
+     public function checkAvailableStockForWere($user_id, $user_model)
+    {
+        $stockDetail = ServiceStockDetail::where('warehouse_id', $this->warehouse_id)
+            ->where('user_id', $user_id)
+            ->where('user_model', $user_model)
+            ->sum('quantity');
+
+        if ($stockDetail) {
+            return $stockDetail ?? 0;
+        }
+        return 0;
     }
     public function checkAvailableStock($product_id, $warehouse_id, $user_id, $user_model)
     {
@@ -718,7 +746,7 @@ class ManageStock extends Component
         $stock->bank_id = $this->bankId;
         $stock->save();
 
-        $dataModal=$this->stock_type=='in' ? 'StockIn' : 'StockOut';
+        $dataModal = $this->stock_type == 'in' ? 'StockIn' : 'StockOut';
 
         $this->handlePaymentTransaction(
             $this->modal_payment_method,
