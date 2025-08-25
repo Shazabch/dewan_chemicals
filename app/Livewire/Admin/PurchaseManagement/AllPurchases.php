@@ -129,7 +129,7 @@ class AllPurchases extends Component
                 $endDate = Carbon::parse($end)->endOfDay();
 
                 $query->whereBetween('created_at', [$startDate, $endDate]);
-            })->get();
+            })->orderBy('invoice_no','desc')->get();
     }
     public function createPurchase()
     {

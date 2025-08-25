@@ -147,6 +147,7 @@ class ManageStock extends Component
                 $endDate = Carbon::parse($this->endDate)->endOfDay();
                 $query->whereBetween('date', [$startDate, $endDate]);
             })
+            ->orderBy('tracking_id','desc')
             ->get();
     }
     public function createStock()

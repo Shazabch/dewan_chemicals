@@ -147,6 +147,7 @@ class AllSales extends Component
 
                 $query->whereBetween('created_at', [$startDate, $endDate]);
             })
+            ->orderBy('invoice_no','desc')
             ->get();
     }
 
