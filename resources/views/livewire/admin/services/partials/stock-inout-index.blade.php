@@ -18,7 +18,7 @@
                                     <th>@lang('Action')</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody x-data="{ hoverTimeout: null }">
                                 @forelse($stocks as $item)
                                 <tr @include('partials.bank-history-color', ['id'=> $item->id])>
 
@@ -26,7 +26,7 @@
                                         <span class="text--primary fw-bold"> {{ $item->title }}</span>
 
                                     </td> -->
-                                    <td >
+                                    <td title="@if($item->stockInOuts->isNotEmpty())@foreach($item->stockInOuts as $inOut){{ optional($inOut->product)->name ?? 'N/A' }}: {{ $inOut->quantity }}@if(!$loop->last)&#10;@endif @endforeach @else No products in this record. @endif">
                                         <span class="text--primary fw-bold"> {{ $item->tracking_id }}</span>
 
                                     </td>
@@ -121,6 +121,7 @@
         </div>
     </div>
 </div>
+
 <div id="paymentModal" wire:ignore.self class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
