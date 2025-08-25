@@ -291,4 +291,18 @@ class ProductController extends Controller
         }
         return back()->withNotify($notify);
     }
+    public function remove($id)
+    {
+        $product = Product::findOrFail($id);
+
+        if ($product->created_at == $product->updated_at) {
+            $product->delete();
+            $notify[] = ['success', 'Product has been deleted successfully.'];
+        } else {
+
+            $notify[] = ['error', 'This product cannot be deleted because it has already been updated or is in use.'];
+        }
+
+        return back()->withNotify($notify);
+    }
 }

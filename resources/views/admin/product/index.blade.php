@@ -68,6 +68,12 @@
                                         <a class="btn btn-sm btn-outline--primary ms-1 editBtn"
                                             href="{{ route('admin.product.edit', $product->id) }}"><i
                                                 class="las la-pen"></i> @lang('Edit')</a>
+
+                                         <button type="button"
+                                                        class="btn btn-sm btn-outline-danger  confirmationBtn"
+                                                        data-question="@lang('Are you sure to delete this Product?')" data-action="{{ route('admin.product.delete', $product->id) }}">
+                                                        <i class="la la-trash"></i>@lang('Delete')
+                                                    </button>
                                     </div>
                                     @endpermit
                                 </td>

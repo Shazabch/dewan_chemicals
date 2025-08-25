@@ -121,6 +121,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('create', 'create')->name('create');
         Route::get('open-stock', 'openStock')->name('open-stock');
         Route::get('edit/{id}', 'edit')->name('edit');
+         Route::post('delete/{id}', 'remove')->name('delete');
         Route::post('store/{id?}', 'store')->name('store');
         Route::post('store-stock', 'openStockStore')->name('store-stock');
         Route::get('alert', 'alert')->name('alert');
