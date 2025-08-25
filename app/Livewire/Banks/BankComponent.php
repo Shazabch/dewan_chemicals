@@ -18,7 +18,7 @@ class BankComponent extends Component
         'bank.account_number' => 'required',
         'bank.account_holder' => 'required',
         'bank.iban' => 'required',
-        'bank.raast_id' => 'required',
+        // 'bank.raast_id' => 'required',
         'bank.opening_balance' => 'required',
         'bank.current_balance' => 'nullable',
     ];
@@ -28,7 +28,7 @@ class BankComponent extends Component
         'bank.account_number.required' => 'The account number is required.',
         'bank.account_holder.required' => 'The account holder is required.',
         'bank.iban.required' => 'The IBAN is required.',
-        'bank.raast_id.required' => 'The Raast ID is required.',
+        // 'bank.raast_id.required' => 'The Raast ID is required.',
         'bank.opening_balance.required' => 'The opening balance is required.',
         'bank.current_balance.required' => 'The current balance is required.',
     ];
@@ -81,7 +81,7 @@ class BankComponent extends Component
             'account_number' => '',
             'account_holder' => '',
             'iban' => '',
-            'raast_id' => '',
+            // 'raast_id' => '',
             'opening_balance' => 0,
             'current_balance' => 0,
         ];
@@ -94,7 +94,7 @@ class BankComponent extends Component
     {
         $this->validate();
         Bank::updateOrCreate(
-            ['account_number' => $this->bank['account_number']], // Condition to check for existing entry
+            ['name' => $this->bank['name']], // Condition to check for existing entry
             $this->bank // Data to update or create
         );
         $this->resetForm();

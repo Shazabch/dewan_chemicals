@@ -34,7 +34,7 @@
                                     <th>Account #</th>
                                     <th>Account Holder</th>
                                     <th>Iban</th>
-                                    <th>Raast Id</th>
+                                    <!-- <th>Raast Id</th> -->
                                     <th>Current Balance</th>
                                     <th>Action(s)</th>
                                 </tr>
@@ -48,7 +48,7 @@
                                     <td>{{ $bank->account_number}}</td>
                                     <td>{{ $bank->account_holder  }}</td>
                                     <td>{{ $bank->iban  }}</td>
-                                    <td>{{ $bank->raast_id  }}</td>
+                                    <!-- <td>{{ $bank->raast_id  }}</td> -->
                                     <td>{{ $bank->current_balance  }}</td>
                                     <td>
                                         @permit('admin.bank.edit')
@@ -131,35 +131,38 @@
                                     @enderror
                                 </div>
                             </div>
+                            {{--
+
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Raast Id</label>
                                     <input type="text" wire:model.live='bank.raast_id' class="form-control">
                                     @error('bank.raast_id')
                                     <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Opening Balance</label>
-                                    <input type="text" wire:model.live='bank.opening_balance' class="form-control">
-                                    @error('bank.opening_balance')
-                                    <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
-                            </div>
+                            @enderror
                         </div>
-
                     </div>
-                    @permit('admin.product.unit.store')
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn--primary h-45 w-100">@lang('Submit')</button>
+                    --}}
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Opening Balance</label>
+                            <input type="text" wire:model.live='bank.opening_balance' class="form-control">
+                            @error('bank.opening_balance')
+                            <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
                     </div>
-                    @endpermit
-                </form>
             </div>
+
         </div>
+        @permit('admin.product.unit.store')
+        <div class="modal-footer">
+            <button type="submit" class="btn btn--primary h-45 w-100">@lang('Submit')</button>
+        </div>
+        @endpermit
+        </form>
     </div>
+</div>
+</div>
 
 </div>
