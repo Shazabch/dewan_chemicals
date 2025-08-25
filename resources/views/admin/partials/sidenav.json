@@ -333,18 +333,6 @@
         "submenu": [
             {
                 "keyword": [
-                    "All expense type",
-                    "Manage expense type",
-                    "expense type Configuration",
-                    "Add expense type",
-                    "Edit expense type"
-                ],
-                "title": "Expense Types",
-                "route_name": "admin.manage_expense_type",
-                "menu_active": "admin.manage_expense_type"
-            },
-            {
-                "keyword": [
                     "All expense",
                     "Manage expense",
                     "expense Configuration",
@@ -354,6 +342,18 @@
                 "title": "Expenses",
                 "route_name": "admin.manage_expense",
                 "menu_active": "admin.manage_expense"
+            },
+            {
+                "keyword": [
+                    "All expense type",
+                    "Manage expense type",
+                    "expense type Configuration",
+                    "Add expense type",
+                    "Edit expense type"
+                ],
+                "title": "Expense Types",
+                "route_name": "admin.manage_expense_type",
+                "menu_active": "admin.manage_expense_type"
             }
         ]
     },

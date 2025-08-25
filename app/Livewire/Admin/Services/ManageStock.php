@@ -299,7 +299,7 @@ class ManageStock extends Component
     {
 
         $this->validate([
-            'title' => 'required|string',
+            'title' => 'nullable|string',
             'date' => 'required',
             'stock_type' => 'required|in:in,out',
             'warehouse_id' => 'required|integer',

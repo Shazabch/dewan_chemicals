@@ -7,11 +7,10 @@
                         <table class="table table--light style--two bg--white">
                             <thead>
                                 <tr>
-                                    <th>@lang('Title')</th>
+                                    <!-- <th>@lang('Title')</th> -->
                                     <th>@lang('Container NO')</th>
                                     <th>@lang('Vendor / Client')</th>
                                     <th>@lang('Warehouse')</th>
-
                                     <th>@lang('Date')</th>
                                     <th>@lang('Total Amount')</th>
                                     <th>@lang('Received Amount')</th>
@@ -23,11 +22,11 @@
                                 @forelse($stocks as $item)
                                 <tr @include('partials.bank-history-color', ['id'=> $item->id])>
 
-                                    <td>
+                                    <!-- <td>
                                         <span class="text--primary fw-bold"> {{ $item->title }}</span>
 
-                                    </td>
-                                    <td>
+                                    </td> -->
+                                    <td >
                                         <span class="text--primary fw-bold"> {{ $item->tracking_id }}</span>
 
                                     </td>

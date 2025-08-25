@@ -4,23 +4,26 @@
             <div class="card-body">
                 <form wire:submit.prevent="saveStock">
                     <div class="row">
-                         <div class="col-xl-3 col-sm-6">
-                                <div class="form-group">
-                                    <label>@lang('Invoice No:')</label>
-                                    <input class="form-control" name="tracking_id" readonly type="text" wire:model="tracking_id"
-                                        required>
-                                </div>
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="form-group">
+                                <label>@lang('Invoice No:')</label>
+                                <input class="form-control" name="tracking_id" readonly type="text" wire:model="tracking_id"
+                                    required>
                             </div>
+                        </div>
+                        {{--
+
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label class="form-label">@lang('Title')</label>
                                 <input type="text" class="form-control" wire:model="title" placeholder="@lang('Title')" required>
                             </div>
                         </div>
+                         --}}
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label class="form-label">@lang('Warehouse')</label>
-                                 @if($selected_stock_id)
+                                @if($selected_stock_id)
                                 <x-select2
                                     id="vc-select-select-were"
                                     disabled="true"
@@ -60,11 +63,11 @@
                                 @endif
                             </div>
                         </div>
-                         <div class="col-xl-3 col-sm-6">
-                                <label>@lang('Date')</label>
-                                <input type="date" class="form-control" wire:model="date">
-                                @error('date') <small class="text-danger">{{ $message }}</small> @enderror
-                            </div>
+                        <div class="col-xl-3 col-sm-6">
+                            <label>@lang('Date')</label>
+                            <input type="date" class="form-control" wire:model="date">
+                            @error('date') <small class="text-danger">{{ $message }}</small> @enderror
+                        </div>
 
 
                         <div class="col-xl-3 col-sm-6">
@@ -85,7 +88,7 @@
                                 <input type="text" class="form-control" wire:model="driver_contact" placeholder="@lang('Driver Contact')" required>
                             </div>
                         </div>
-                         <div class="col-xl-3 col-sm-6">
+                        <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label class="form-label">@lang('Labour / Loading')</label>
                                 <input type="number" class="form-control" wire:model="labour" placeholder="@lang('Labour')" required>
@@ -94,7 +97,7 @@
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label class="form-label">@lang('Fare')</label>
-                                <input type="number" class="form-control" wire:model="fare" placeholder="@lang('Fare')" >
+                                <input type="number" class="form-control" wire:model="fare" placeholder="@lang('Fare')">
                             </div>
                         </div>
 
