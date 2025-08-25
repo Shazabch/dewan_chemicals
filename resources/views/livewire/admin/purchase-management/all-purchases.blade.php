@@ -304,13 +304,13 @@
                                                 </td>
                                                 <td>
                                                     @if($product['unit'] == 'KG' || $product['unit'] == 'Kg' || $product['unit'] == 'kg')
-                                                    <input type="number" wire:model.live.debounce.500ms="products.{{ $index }}.net_weight" class="form-control">
+                                                    <input type="number" wire:model.live.debounce.300ms="products.{{ $index }}.net_weight" class="form-control">
                                                     {{ $product['unit'] }}
                                                     @error("products.$index.net_weight") <small class="text-danger">{{ $message }}</small> @enderror
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <input type="text" wire:model.live.debounce.500ms="products.{{ $index }}.price" class="form-control">
+                                                    <input type="text" wire:model.live.debounce.300ms="products.{{ $index }}.price" class="form-control">
                                                     @error("products.$index.price") <small class="text-danger">{{ $message }}</small> @enderror
                                                 </td>
 
