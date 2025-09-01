@@ -7,6 +7,9 @@
             <button type="button" wire:click="newEntry" class="btn btn-sm btn-outline--primary cuModalBtn" data-modal_title="@lang('Add New Bank')">
                 <i class="las la-plus"></i>@lang('Add New')
             </button>
+            <button type="button" wire:click="bankTransfer" class="btn btn-sm btn-dark cuModalBtn" data-modal_title="@lang('Bank Transfer')">
+                <i class="las la-clipboard"></i>@lang('Bank Transfer')
+            </button>
             <button type="button" wire:click="savePdf" class="btn btn-sm btn--primary" data-modal_title="@lang('Download PDF')">
                 <i
                     class="la la-download"></i>@lang('Download PDF')
@@ -87,11 +90,60 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header bg--primary text-white">
-                    <h5 class="modal-title text-center w-100 text-white"><span class="type"></span> <span class="text-white">Manage Bank</span></h5>
+                    <h5 class="modal-title text-center w-100 text-white"><span class="type"></span> <span class="text-white">@if($bankTranfer) Bank To Bank Transfer @else Manage Bank @endif</span></h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="las la-times"></i>
                     </button>
                 </div>
+                @if($bankTranfer)
+                <form wire:submit.prevent="saveEntry">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Transfer From</label>
+                                    <select class="form-control" wire:model="fromBank" id="fromBank">
+                                        <option value="">Select Bank</option>
+                                        @foreach($banks as $bank)
+                                        <option value="{{$bank->id}}">{{$bank->name}}</option>
+                                        @endforeach
+                                    </select>
+
+                                    @error('fromBank')
+                                    <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Transfer To</label>
+                                    <select class="form-control" wire:model="toBank" id="toBank">
+                                        <option value="">Select Bank</option>
+                                        @foreach($banks as $bank)
+                                        <option value="{{$bank->id}}">{{$bank->name}}</option>
+                                        @endforeach
+                                    </select>
+
+                                    @error('toBank')
+                                    <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label for="transfer_amount">Transfer Amount</label>
+                                <input type="number" wire:model="transfer_amount" class="form-control">
+                            </div>
+
+                        </div>
+
+                    </div>
+                    @permit('admin.product.unit.store')
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn--primary h-45 w-100">@lang('Submit')</button>
+                    </div>
+                    @endpermit
+                </form>
+                @else
                 <form wire:submit.prevent="saveEntry">
                     <div class="modal-body">
                         <div class="row">
@@ -131,38 +183,28 @@
                                     @enderror
                                 </div>
                             </div>
-                            {{--
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Raast Id</label>
-                                    <input type="text" wire:model.live='bank.raast_id' class="form-control">
-                                    @error('bank.raast_id')
+                                    <label>Opening Balance</label>
+                                    <input type="text" wire:model.live='bank.opening_balance' class="form-control">
+                                    @error('bank.opening_balance')
                                     <small class="text-danger">{{ $message }}</small>
-                            @enderror
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    --}}
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Opening Balance</label>
-                            <input type="text" wire:model.live='bank.opening_balance' class="form-control">
-                            @error('bank.opening_balance')
-                            <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
-            </div>
 
+                    </div>
+                    @permit('admin.product.unit.store')
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn--primary h-45 w-100">@lang('Submit')</button>
+                    </div>
+                    @endpermit
+                </form>
+                @endif
+            </div>
         </div>
-        @permit('admin.product.unit.store')
-        <div class="modal-footer">
-            <button type="submit" class="btn btn--primary h-45 w-100">@lang('Submit')</button>
-        </div>
-        @endpermit
-        </form>
     </div>
-</div>
-</div>
 
 </div>
