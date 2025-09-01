@@ -12,9 +12,15 @@ use Livewire\WithPagination;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 
+use App\Traits\DailyBookEntryTrait;
+use App\Traits\HandlesBankPayments;
+
 class BankTransactionDetails extends Component
 {
     use WithPagination;
+    use HandlesBankPayments;
+    use DailyBookEntryTrait;
+
     public $bankId;
     public $bank;
     public $perPage = 20;
@@ -23,6 +29,15 @@ class BankTransactionDetails extends Component
     public $search = '';
     public $startDate = null;
     public $endDate = null;
+
+    public $banks = [];
+    public $fromBank = null;
+    public $fromBankName = null;
+    public $fromBankBalance = null;
+    public $toBank = null;
+    public $amount = null;
+
+
     public function mount($bankId)
     {
 
@@ -162,5 +177,60 @@ class BankTransactionDetails extends Component
 
                 break;
         }
+    }
+    public function newBankToBank()
+    {
+
+        $this->reset(['fromBank', 'toBank', 'amount']);
+        $this->banks = Bank::all();
+
+
+        $this->dispatch('open-modal-bank');
+        $this->fromBankName = $this->bank->name;
+        $this->fromBankBalance = $this->bank->current_balance;
+        $this->fromBank = $this->bankId;
+    }
+    public function saveTransfer()
+    {
+
+        $this->validate([
+            'fromBank' => 'required',
+            'toBank' => 'required',
+            'amount' => 'required',
+        ]);
+        //// Can Not transfer to the same bank
+        if ($this->fromBank == $this->toBank) {
+            $this->dispatch('notify', status: 'error', message: 'You can not transfer to the same bank.');
+
+            return;
+        }
+        // Check if the amount is greater than 0
+        if ($this->amount <= 0) {
+            $this->dispatch('notify', status: 'error', message: 'Amount must be greater than 0.');
+            return;
+        }
+        // Check if the fromBank has sufficient balance
+        $fromBankBalance = Bank::find($this->fromBank)->current_balance;
+        if ($fromBankBalance < $this->amount) {
+
+            $this->dispatch('notify', status: 'error', message: 'Insufficient balance in the from bank.');
+            return;
+        }
+
+        $this->handlePaymentTransaction(
+            'transfer',
+            0,
+            $this->amount,
+            $this->toBank,
+            $this->fromBank,
+            'Bank Transfer',
+            'debit'
+        );
+
+        $this->handleDailyBookEntries(0, $this->amount, 'debit', 'bank', 'Bank Transfer', $this->fromBank);
+        $this->handleDailyBookEntries(0, $this->amount, 'credit', 'bank', 'Bank Transfer', $this->toBank);
+
+        $this->reset(['fromBank', 'toBank', 'amount']);
+        $this->dispatch('close-modal-bank');
     }
 }

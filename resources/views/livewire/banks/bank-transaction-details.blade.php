@@ -44,6 +44,9 @@
 
                 </span>
             </button>
+            <!-- <button type="button" wire:click="newBankToBank" class="btn btn-sm btn-outline--primary " data-modal_title="@lang('Bank To Bank')">
+                <i class="las la-plus"></i>@lang('Transfer')
+            </button> -->
         </div>
     </div>
 
@@ -80,5 +83,96 @@
             </tbody>
         </table>
     </div>
+    <div id="bankToBankModal" class="modal fade" tabindex="-1" role="dialog" wire:ignore.self>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg--primary text-white">
+                    <h5 class="modal-title text-center w-100 text-white"><span class="type"></span> <span class="text-white">Bank To Bank Transfer</span></h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="las la-times"></i>
+                    </button>
+                </div>
+                <form wire:submit.prevent="saveTransfer">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>From Bank</label>
+                                    <input type="text" class="form-control" value="{{ $fromBankName }}" readonly>
+                                    @error('fromBank')
+                                    <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Current Balance</label>
+                                    <input type="text" class="form-control" value="{{ $fromBankBalance }}" readonly>
+                                    @error('fromBankBalance')
+                                    <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>To Bank</label>
+                                    <select class="form-control" wire:model.live='toBank' required>
+                                        <option value="">Select Bank</option>
+                                        @foreach($banks as $bank)
+                                        <option value="{{ $bank->id }}">{{ $bank->name }} ({{ $bank->account_number }})</option>
+                                        @endforeach
+                                    </select>
+                                    @error('toBank')
+                                    <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+
+
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Amount</label>
+                                    <div class="input-group">
+                                        <button class="input-group-text">{{ gs('cur_sym') }}</button>
+                                        <input type="number" class="form-control" wire:model.live='amount' step="any" required>
+                                    </div>
+                                    @error('amount') <small class="text-danger">{{ $message }}</small> @enderror
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ////// Show all Errors  -->
+                        @if($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @endif
+                        <div class="row">
+                            <!-- // submit -->
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn--primary w-100">
+                                    <i class="las la-save"></i> Save
+                                </button>
+                            </div>
+                        </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('open-modal-bank', () => {
+            $('#bankToBankModal').modal('show'); // Open the modal
+        });
+
+        window.addEventListener('close-modal-bank', () => {
+            $('#bankToBankModal').modal('hide'); // Close the modal
+        });
+    </script>
 </div>
+
 </div>

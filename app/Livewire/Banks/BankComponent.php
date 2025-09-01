@@ -9,8 +9,13 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Illuminate\Validation\Rule; // Import Rule for validation
 
+use App\Traits\DailyBookEntryTrait;
+use App\Traits\HandlesBankPayments;
+
 class BankComponent extends Component
 {
+    use HandlesBankPayments;
+    use DailyBookEntryTrait;
     public $pageTitle;
     public  $bank;
     public $bankTranfer = false;
@@ -146,7 +151,7 @@ class BankComponent extends Component
     {
         $this->resetForm();
         $this->bankTranfer = true;
-        $this->dispatch('open-modal', ['modalId' => 'cuModal']); // Use cuModal
+        $this->dispatch('open-modal-bank');
     }
 
     public function resetForm()
@@ -187,30 +192,22 @@ class BankComponent extends Component
     {
         $this->validate();
 
-        // Handle bank transfer logic
-        $fromBank = Bank::find($this->fromBank);
-        $toBank = Bank::find($this->toBank);
+        if ($this->fromBank && $this->toBank) {
+            $this->handlePaymentTransaction(
+                'transfer',
+                0,
+                $this->transfer_amount,
+                $this->toBank,
+                $this->fromBank,
+                'Bank Transfer',
+                'debit'
+            );
 
-        if ($fromBank && $toBank) {
-            // Deduct from fromBank
-            $fromBank->current_balance -= $this->transfer_amount;
-            $fromBank->save();
+            $this->handleDailyBookEntries(0, $this->transfer_amount, 'debit', 'bank', 'Bank Transfer', $this->fromBank);
+            $this->handleDailyBookEntries(0, $this->transfer_amount, 'credit', 'bank', 'Bank Transfer', $this->toBank);
 
-            // Add to toBank
-            $toBank->current_balance += $this->transfer_amount;
-            $toBank->save();
-
-            // You might want to create a transaction record here for auditing
-            // For example:
-            // Transaction::create([
-            //     'from_bank_id' => $fromBank->id,
-            //     'to_bank_id' => $toBank->id,
-            //     'amount' => $this->transfer_amount,
-            //     'type' => 'bank_transfer',
-            //     'description' => 'Bank to bank transfer',
-            // ]);
-
-            $this->resetForm();
+            $this->reset(['fromBank', 'toBank', 'transfer_amount']);
+            $this->dispatch('close-modal-bank');
             $this->dispatch('notify', status: 'success', message: 'Bank transfer completed successfully!');
         } else {
             $this->dispatch('notify', status: 'error', message: 'One or both selected banks not found.');
@@ -219,6 +216,7 @@ class BankComponent extends Component
 
         $this->dispatch('close-modal');
     }
+
     public function confirmDelete($bankId)
     {
         $this->dispatch('swal:confirm', [ // Corrected event name

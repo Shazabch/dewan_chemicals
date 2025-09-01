@@ -7,7 +7,7 @@ use App\Models\BankTransaction;
 
 trait HandlesBankPayments
 {
-    public function handlePaymentTransaction($method, $cashAmount, $bankAmount, $bankId, $dataModelId,$dataModelName,$transaction_type)
+    public function handlePaymentTransaction($method, $cashAmount, $bankAmount, $bankId, $dataModelId, $dataModelName, $transaction_type)
     {
         if ($method === 'cash' || $method === 'both') {
             $cashBank = Bank::where('name', 'Cash')->first();
@@ -17,7 +17,7 @@ trait HandlesBankPayments
                     $cashAmount,
                     $dataModelId,
                     $dataModelName,
-                    $method === 'both' ? 'Cash Payment for '.$dataModelName.' (Both)' : 'Cash Payment '.$dataModelName,
+                    $method === 'both' ? 'Cash Payment for ' . $dataModelName . ' (Both)' : 'Cash Payment ' . $dataModelName,
                     $transaction_type,
                 );
             }
@@ -31,13 +31,25 @@ trait HandlesBankPayments
                     $bankAmount,
                     $dataModelId,
                     $dataModelName,
-                    $method === 'both' ? 'Bank Payment for '.$dataModelName.' (Both)' : 'Bank Payment '.$dataModelName,
+                    $method === 'both' ? 'Bank Payment for ' . $dataModelName . ' (Both)' : 'Bank Payment ' . $dataModelName,
                     $transaction_type,
                 );
             }
         }
+        if ($method === 'transfer') {
+            $tobank = Bank::find($bankId);
+            $frombank = Bank::find($dataModelId);
+            if ($tobank) {
+                $source = 'Bank Transfer From ' . $frombank->name;
+                $this->handleBankTransaction($tobank->id, $bankAmount, $frombank->id, $dataModelName, $source, 'debit');
+            }
+            if ($frombank) {
+                $source = 'Bank Transfer To ' . $tobank->name;
+                $this->handleBankTransaction($frombank->id, $bankAmount, $tobank->id, $dataModelName, $source, 'credit');
+            }
+        }
     }
-    public function handleBankTransaction($bankId, $amount, $moduleId, $modelName,$source,$transaction_type)
+    public function handleBankTransaction($bankId, $amount, $moduleId, $modelName, $source, $transaction_type)
     {
         if (!$bankId || $amount <= 0) {
             return;
@@ -54,11 +66,11 @@ trait HandlesBankPayments
         $transaction->module_id = $moduleId;
         $transaction->data_model = $modelName;
         $transaction->source = $source;
-       if($transaction_type == 'debit'){
+        if ($transaction_type == 'debit') {
             $closing = $opening + $amount;
             $transaction->credit = 0.00;
             $transaction->debit = $amount;
-        }else{
+        } else {
             $closing = $opening - $amount;
             $transaction->debit = 0.00;
             $transaction->credit = $amount;
@@ -72,6 +84,4 @@ trait HandlesBankPayments
         $bank->current_balance = $closing;
         $bank->save();
     }
-
-
 }
