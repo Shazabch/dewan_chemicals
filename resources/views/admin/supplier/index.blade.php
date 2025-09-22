@@ -190,14 +190,14 @@
 
                 <div class="modal-body">
                     {{-- [NEW] Transaction Type Selector for Suppliers --}}
-                    <!-- <div class="form-group">
+                    <div class="form-group">
                         <label>@lang('Transaction Type')</label>
                         <select name="transaction_type" class="form-control" required>
                             <option value="payment">@lang('Pay Bill / Advance (Money Out)')</option>
                             <option value="receive">@lang('Receive Refund / Money In')</option>
                         </select>
-                    </div> -->
-                    <input type="hidden" name="transaction_type" value="payment">
+                    </div>
+                    <!-- <input type="hidden" name="transaction_type" value="payment"> -->
 
                     <hr>
                     <div class="row">

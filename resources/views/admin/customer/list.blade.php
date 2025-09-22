@@ -192,14 +192,14 @@
 
                 <div class="modal-body">
                     {{-- [NEW] Transaction Type Selector --}}
-                    <!-- <div class="form-group">
+                    <div class="form-group">
                         <label>@lang('Transaction Type')</label>
                         <select name="transaction_type" class="form-control" required>
                             <option value="advance">@lang('Pay Advance / Money Out')</option>
                             <option value="payment">@lang('Receive Payment / Money In')</option>
                         </select>
-                    </div> -->
-                    <input type="hidden" name="transaction_type" value="payment">
+                    </div>
+                    <!-- <input type="hidden" name="transaction_type" value="payment"> -->
 
                     <hr> {{-- Visual separator --}}
                     <div class="row">
