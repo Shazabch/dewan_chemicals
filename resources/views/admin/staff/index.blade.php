@@ -67,6 +67,14 @@
                                             <i class="fas fa-money-bill-wave"></i> {{-- Example using Font Awesome --}}
                                         </a>
                                         @endif
+                                        <form action="{{ route('admin.staff.destroy', $staff->id) }}" method="POST" class="d-inline-block delete-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="btn btn-sm btn-outline--danger deleteBtn">
+                                                <i class="las la-trash-alt"></i>@lang('Delete')
+                                            </button>
+                                        </form>
+
                                     </div>
                                 </td>
                             </tr>
@@ -160,6 +168,61 @@
 
 @push('script-lib')
 <script src="{{ asset('assets/admin/js/cu-modal.js') }}"></script>
+@endpush
+@push('script')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    (function($) {
+        "use strict";
+
+        // Password generator (your existing code)
+        $('.generatePassword').on('click', function() {
+            $(this).siblings('[name=password]').val(generatePassword());
+        });
+
+        $('.cuModalBtn').on('click', function() {
+            let passwordField = $('#cuModal').find($('[name=password]'));
+            let label = passwordField.parents('.form-group').find('label')
+            if ($(this).data('resource')) {
+                passwordField.removeAttr('required');
+                label.removeClass('required')
+            } else {
+                passwordField.attr('required', 'required');
+                label.addClass('required')
+            }
+        });
+
+        function generatePassword(length = 12) {
+            let charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+<>?/";
+            let password = '';
+            for (var i = 0, n = charset.length; i < length; ++i) {
+                password += charset.charAt(Math.floor(Math.random() * n));
+            }
+            return password;
+        }
+
+        // 🔴 SweetAlert Delete Confirmation
+        $(document).on('click', '.deleteBtn', function(e) {
+            e.preventDefault();
+            let form = $(this).closest('form');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This staff will be deleted (soft delete).",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+
+    })(jQuery);
+</script>
 @endpush
 
 @push('script')

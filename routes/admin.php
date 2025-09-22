@@ -74,6 +74,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::post('save/{id?}', 'save')->name('save');
         Route::post('switch-status/{id}', 'status')->name('status');
         Route::get('login/{id}', 'login')->name('login');
+        Route::delete('/{id}','destroy')->name('destroy');
         Route::get('{user}/salary', 'salary')->name('salary');
     });
 

@@ -22,7 +22,7 @@ class StaffController extends Controller
     public function salary(Admin $user)
     {
         $pageTitle = '';
-        return view('admin.staff.salary', ['staff' => $user,'pageTitle' =>$pageTitle]);
+        return view('admin.staff.salary', ['staff' => $user, 'pageTitle' => $pageTitle]);
     }
     public function status($id)
     {
@@ -48,6 +48,18 @@ class StaffController extends Controller
         $staff->password = $request->password ? Hash::make($request->password) : $staff->password;
         $staff->save();
         $notify[] = ['success', $message];
+        return back()->withNotify($notify);
+    }
+    public function destroy($id)
+    {
+        $staff = Admin::findOrFail($id);
+
+        if ($staff->id == 1) {
+            return back()->withErrors(['You cannot delete the Super Admin.']);
+        }
+
+        $staff->delete(); // Soft delete (make sure Staff model uses SoftDeletes)
+        $notify[] = ['success', 'Staff deleted successfully'];
         return back()->withNotify($notify);
     }
 
