@@ -208,7 +208,7 @@
 
             Swal.fire({
                 title: 'Are you sure?',
-                text: "This staff will be deleted (soft delete).",
+                text: "This staff will be deleted.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
