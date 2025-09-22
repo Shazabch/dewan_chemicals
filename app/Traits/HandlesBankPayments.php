@@ -7,7 +7,7 @@ use App\Models\BankTransaction;
 
 trait HandlesBankPayments
 {
-    public function handlePaymentTransaction($method, $cashAmount, $bankAmount, $bankId, $dataModelId, $dataModelName, $transaction_type)
+    public function handlePaymentTransaction($method, $cashAmount, $bankAmount, $bankId=null, $dataModelId, $dataModelName, $transaction_type)
     {
         if ($method === 'cash' || $method === 'both') {
             $cashBank = Bank::where('name', 'Cash')->first();

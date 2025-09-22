@@ -105,12 +105,12 @@ class SalaryComponent extends Component
     public function createPayslip()
     {
         $payPeriodStart = Carbon::parse($this->pay_period_start);
-        $existing = Salary::where('staff_id', $this->user->id)->where('pay_period_start', $payPeriodStart)->first();
+        // $existing = Salary::where('staff_id', $this->user->id)->where('pay_period_start', $payPeriodStart)->first();
 
-        if ($existing) {
-            session()->flash('error', 'A payslip for this user and pay period already exists.');
-            return;
-        }
+        // if ($existing) {
+        //     session()->flash('error', 'A payslip for this user and pay period already exists.');
+        //     return;
+        // }
 
         $grossSalary = $this->base_salary + collect($this->allowances)->where('name', '!=', '')->pluck('amount')->sum();
         $netSalary = $grossSalary - collect($this->deductions)->where('name', '!=', '')->pluck('amount')->sum();
@@ -230,16 +230,16 @@ class SalaryComponent extends Component
                     'status' => 'paid',
                     'payment_date' => $this->payment_date,
                 ]);
-
+                $transactionType = $amount_cash < 0 ? 'debit' : 'credit';
                 // 2. Handle the generic transaction log
                 $this->handlePaymentTransaction(
                     'cash',
-                    $amount_cash,
-                    $amount_bank,
+                    abs($amount_cash), // Always pass positive amount
+                    abs($amount_bank), // Same for bank
                     null, // bankId is null for cash payments
                     $salary->id,
                     'Salary',
-                    'credit' // Credit from our perspective (money out)
+                    $transactionType
                 );
 
                 // 3. Handle the daily book financial ledger

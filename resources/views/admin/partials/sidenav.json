@@ -26,32 +26,28 @@
         "route_name": "admin.dashboard",
         "menu_active": "admin.dashboard"
     },
-
-"day_book": {
-    "title": "Day Book",
-    "icon": "la la-book",
-    "menu_active": [
-        "admin.daybook*"
-    ],
-    "submenu": [
-        {
-            "keyword": [
-                "Day Book",
-                "Bookkeeping",
-                "Transactions",
-                "Main Day Book"
-            ],
-            "title": "Day Book",
-            "route_name": "admin.daybook.index",
-            "menu_active": [
-                "admin.daybook.index"
-            ]
-        }
-
-    ]
-},
-
-
+    "day_book": {
+        "title": "Day Book",
+        "icon": "la la-book",
+        "menu_active": [
+            "admin.daybook*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "Day Book",
+                    "Bookkeeping",
+                    "Transactions",
+                    "Main Day Book"
+                ],
+                "title": "Day Book",
+                "route_name": "admin.daybook.index",
+                "menu_active": [
+                    "admin.daybook.index"
+                ]
+            }
+        ]
+    },
     "manage_sale": {
         "title": "Manage Sales",
         "icon": "la la-shopping-cart",
@@ -432,7 +428,28 @@
             }
         ]
     },
-
+    "manufacturing": {
+        "title": "Manufacturing Unit",
+        "header": "Manufacturing",
+        "icon": "la la-cogs",
+        "menu_active": [
+            "admin.production_flow"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "All Services",
+                    "Manage Service",
+                    "Service Configuration",
+                    "Add service",
+                    "Edit service"
+                ],
+                "title": "Production FLows",
+                "route_name": "admin.production_flow",
+                "menu_active": "admin.production_flow"
+            }
+        ]
+    },
     "payment_report": {
         "title": "Payment Report",
         "header": "Report",

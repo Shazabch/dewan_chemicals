@@ -109,6 +109,22 @@
                     </h5>
                     <button type="button" class="btn-close" wire:click="closeModal"></button>
                 </div>
+                <div class="p-3">
+                    {{-- Session Messages --}}
+                    @if (session()->has('message'))
+                    <div class="alert alert-success alert-dismissible fade show p-2" role="alert">
+                        {{ session('message') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    @endif
+                    @if (session()->has('error'))
+                    <div class="alert alert-danger alert-dismissible fade show p-2" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    @endif
+
+                </div>
                 <form wire:submit.prevent="savePayslip">
                     <div class="modal-body">
                         {{-- Fieldset disables all form elements within it when in 'view' mode --}}
@@ -201,12 +217,12 @@
                         <p>You are about to mark the salary for <strong>{{ $payingSalary->user->name }}</strong> for the period of <strong>{{ $payingSalary->pay_period_start->format('F, Y') }}</strong> as paid.</p>
 
                         <div class="alert alert-info d-flex justify-content-between p-4">
-                             <div>
-                                 Amount: <strong>{{ number_format($payingSalary->net_salary, 2) }}</strong>
-                             </div>
-                             <div>
+                            <div>
+                                Amount: <strong>{{ number_format($payingSalary->net_salary, 2) }}</strong>
+                            </div>
+                            <div>
                                 Method: <strong>Cash</strong>
-                             </div>
+                            </div>
 
 
                         </div>
