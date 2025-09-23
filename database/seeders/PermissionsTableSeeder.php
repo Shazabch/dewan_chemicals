@@ -178,7 +178,21 @@ class PermissionsTableSeeder extends Seeder
             ['id' => 230, 'name' => 'Manage Expenses', 'group' => 'ExpenseTypeController', 'code' => 'admin.manage_expense'],
             ['id' => 231, 'name' => 'Banks Management', 'group' => 'BanksManagementController', 'code' => 'admin.bank.index'],
             ['id' => 232, 'name' => 'Service Stock Edit', 'group' => 'ServiceStockController', 'code' => 'admin.manage_stock_in.edit'],
+            ['id' => 233, 'name' => 'Supplier Payments Report', 'group' => 'PaymentReportController', 'code' => 'admin.report.payment.supplier'],
+            ['id' => 234, 'name' => 'Customer Payments Report', 'group' => 'PaymentReportController', 'code' => 'admin.report.payment.customer'],
 
+            ['id' => 235, 'name' => 'Purchases Data Entry Report', 'group' => 'DataEntryReportController', 'code' => 'admin.report.data.entry.purchase'],
+            ['id' => 236, 'name' => 'Purchase Return Data Entry Report', 'group' => 'DataEntryReportController', 'code' => 'admin.report.data.entry.purchase.return'],
+            ['id' => 237, 'name' => 'Sales Data Entry Report', 'group' => 'DataEntryReportController', 'code' => 'admin.report.data.entry.sale'],
+            ['id' => 238, 'name' => 'Sale Return Data Entry Report', 'group' => 'DataEntryReportController', 'code' => 'admin.report.data.entry.sale.return'],
+            ['id' => 239, 'name' => 'Products Data Entry Report', 'group' => 'DataEntryReportController', 'code' => 'admin.report.data.entry.product'],
+            ['id' => 240, 'name' => 'Customers Data Entry Report', 'group' => 'DataEntryReportController', 'code' => 'admin.report.data.entry.customer'],
+            ['id' => 241, 'name' => 'Customer Payments Data Entry Report', 'group' => 'DataEntryReportController', 'code' => 'admin.report.data.entry.customer.payment'],
+            ['id' => 242, 'name' => 'Suppliers Data Entry Report', 'group' => 'DataEntryReportController', 'code' => 'admin.report.data.entry.supplier'],
+            ['id' => 243, 'name' => 'Supplier Payments Data Entry Report', 'group' => 'DataEntryReportController', 'code' => 'admin.report.data.entry.supplier.payment'],
+            ['id' => 244, 'name' => 'Adjustments Data Entry Report', 'group' => 'DataEntryReportController', 'code' => 'admin.report.data.entry.adjustment'],
+            ['id' => 245, 'name' => 'Transfers Data Entry Report', 'group' => 'DataEntryReportController', 'code' => 'admin.report.data.entry.transfer'],
+            ['id' => 246, 'name' => 'Expenses Data Entry Report', 'group' => 'DataEntryReportController', 'code' => 'admin.report.data.entry.expense'],
 
         ];
 
