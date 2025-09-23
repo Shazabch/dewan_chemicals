@@ -59,4 +59,8 @@ class Stock extends Model
     {
         return $this->morphTo(__FUNCTION__, 'user_model', 'user_id');
     }
+     public function userClient()
+    {
+        return $this->morphTo(__FUNCTION__, 'user_client_model', 'user_client_id');
+    }
 }

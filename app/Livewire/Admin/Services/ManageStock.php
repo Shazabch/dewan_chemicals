@@ -29,6 +29,7 @@ class ManageStock extends Component
 
     public $stocks = [];
     public $users = [];
+    public $userClients = [];
     public $note = '';
     public $selected_id;
     public ?string $user_identifier = ''; // The wire:model property, e.g., "Supplier-15"
@@ -54,6 +55,7 @@ class ManageStock extends Component
 
 
     public $user_id;
+    public $user_client_id;
     public $driver_name;
     public $driver_contact;
     public $vehicle_number;
@@ -158,12 +160,14 @@ class ManageStock extends Component
         $this->showDetails = false;
         $this->tracking_id = Stock::generateTrackingId($this->stock_type);
         $this->users = [];
+        $this->userClients = [];
         $this->date = now()->format('Y-m-d');
         $this->getProducts();
         $this->stockItems = [
             ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0, 'net_weight' => 0, 'is_kg' => false]
         ];
         $this->users = $this->loadUsers();
+        $this->userClients = $this->loadUserClients();
 
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
         $this->warehouses = $this->warehouses->map(function ($warehouse) {
@@ -233,6 +237,7 @@ class ManageStock extends Component
         $this->showDetails = false;
         $this->users = [];
         $this->users = $this->loadUsers();
+        $this->userClients = $this->loadUserClients();
         $this->getProducts();
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
         $this->warehouses = $this->warehouses->map(function ($warehouse) {
@@ -273,6 +278,9 @@ class ManageStock extends Component
         $user_model = $this->selectedStock->user_model ?? null;
         $this->user_id = $user_model . '-' . $user_id;
 
+        $user_client_id = $this->selectedStock->user_client_id ?? null;
+        $user_client_model = $this->selectedStock->user_client_model ?? null;
+        $this->user_client_id = $user_client_model . '-' . $user_client_id;
         $this->stockItems = [];
 
         foreach ($this->selectedStock->stockInOuts as $item) {
@@ -305,6 +313,7 @@ class ManageStock extends Component
             'stock_type' => 'required|in:in,out',
             'warehouse_id' => 'required|integer',
             'user_id' => 'required',
+            'user_client_id' => 'nullable',
             'labour' => 'nullable',
             'fare' => 'nullable',
             'vehicle_number' => 'nullable|string',
@@ -313,7 +322,11 @@ class ManageStock extends Component
             'stockItems.*.product_id' => 'required|integer',
             'stockItems.*.quantity' => 'required|numeric|min:1',
         ]);
+
         list($selecteduserModel, $selecteduserId) = explode('-', $this->user_id, 2);
+        if ($this->stock_type == 'out') {
+            list($selecteduserClientModel, $selecteduserClientId) = explode('-', $this->user_client_id, 2);
+        }
 
         /////////////////  Check Stock Availability for all Products
         foreach ($this->stockItems as $item) {
@@ -348,6 +361,8 @@ class ManageStock extends Component
                 'warehouse_id' => $this->warehouse_id,
                 'user_id' => $selecteduserId,
                 'user_model' => $selecteduserModel,
+                'user_client_id' => $selecteduserClientId ?? null,
+                'user_client_model' => $selecteduserClientModel ?? null,
                 'labour' => $this->labour,
                 'fare' => $this->fare,
                 'vehicle_number' => $this->vehicle_number,
@@ -369,6 +384,8 @@ class ManageStock extends Component
                 'warehouse_id' => $this->warehouse_id,
                 'user_id' => $selecteduserId,
                 'user_model' => $selecteduserModel,
+                'user_client_id' => $selecteduserClientId ?? null,
+                'user_client_model' => $selecteduserClientModel ?? null,
                 'labour' => $this->labour,
                 'fare' => $this->fare,
                 'vehicle_number' => $this->vehicle_number,
@@ -418,6 +435,7 @@ class ManageStock extends Component
         $this->date = '';
         $this->warehouse_id = null;
         $this->user_id = null;
+        $this->user_client_id = null;
         $this->labour = '';
         $this->fare = '';
         $this->vehicle_number = '';
@@ -562,13 +580,41 @@ class ManageStock extends Component
 
         return $formattedUsers;
     }
+    private function loadUserClients(): array
+    {
+        $formattedUsers = [];
+
+        // Get data from models
+        $suppliers = Supplier::select('id', 'name')->orderBy('name')->get();
+        $clients = Customer::select('id', 'name')->orderBy('name')->get();
+
+        // Add Suppliers to the array with a unique identifier
+        foreach ($suppliers as $supplier) {
+
+            $formattedUsers[] = [
+                'id'   => 'Supplier-' . $supplier->id,
+                'text' => $supplier->name . ' (Supplier)',
+            ];
+        }
+
+        // Add Clients to the array with a unique identifier
+        foreach ($clients as $client) {
+
+            $formattedUsers[] = [
+                'id'   => 'Customer-' . $client->id,
+                'text' => $client->name . ' (Customer)',
+            ];
+        }
+
+        return $formattedUsers;
+    }
     public function checkUserActive($user_id, $user_model)
     {
 
 
         $selectedStock = $this->checkAvailableStockForWere($user_id, $user_model);
 
-        if ($selectedStock==0 && $this->stock_type=='out') {
+        if ($selectedStock == 0 && $this->stock_type == 'out') {
             return false;
         } else {
             return true;
@@ -619,7 +665,7 @@ class ManageStock extends Component
             }
         }
     }
-     public function checkAvailableStockForWere($user_id, $user_model)
+    public function checkAvailableStockForWere($user_id, $user_model)
     {
         $stockDetail = ServiceStockDetail::where('warehouse_id', $this->warehouse_id)
             ->where('user_id', $user_id)

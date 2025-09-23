@@ -69,7 +69,7 @@ class ManageStockDetails extends Component
             }
         }
         foreach ($clients as $client) {
-            if ($this->checkUserActive($supplier->id, 'Customer')) {
+            if ($this->checkUserActive($client->id, 'Customer')) {
                 $this->users[] = [
                     'id' => $client->id,
                     'name' => $client->name,
@@ -153,8 +153,18 @@ class ManageStockDetails extends Component
         $query = ServiceStockDetail::query();
         $query->where('user_id', $user_id)->where('user_model', $user_model);
         $this->selectedStock = $query->get();
+
         if ($this->selectedStock->isEmpty()) {
-            return false;
+           return false;
+
+            // $query = Stock::query();
+            // $query->where('user_client_id', $user_id)->where('user_client_model', $user_model);
+            // $Stock = $query->get();
+            // if ($Stock->isEmpty()) {
+            //     return false;
+            // } else {
+            //     return true;
+            // }
         } else {
             return true;
         }

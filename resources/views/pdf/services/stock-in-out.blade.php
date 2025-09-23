@@ -6,7 +6,10 @@
     <div class="float-left">
         <p class="mb-5px"><strong>Title:</strong> {{ $selectedStock->title }}</p>
         <p class="mb-5px"><strong>Warehouse:</strong> {{ $selectedStock->warehouse->name }}</p>
-        <p class="mb-5px"><strong>@lang('Vendor / Client'):</strong> {{ $selectedStock->user?->name }}</p>
+        <p class="mb-5px"><strong>@lang('Vendor'):</strong> {{ $selectedStock->user?->name }}</p>
+        @if($selectedStock->stock_type=='out')
+        <p class="mb-5px"><strong>@lang('Client'):</strong> {{ $selectedStock->userClient?->name }}</p>
+        @endif
         <p class="mb-5px"><strong>Labour:</strong> {{ $selectedStock->labour }}</p>
         <p class="mb-5px"><strong>Vehicle Number:</strong> {{ $selectedStock->vehicle_number }}</p>
         <p class="mb-5px"><strong>Driver Name:</strong> {{ $selectedStock->driver_name }}</p>

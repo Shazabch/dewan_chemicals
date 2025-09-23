@@ -10,7 +10,10 @@
                     <p class="mb-1"><strong>Title:</strong> {{ $selectedStock->title }}</p>
                     <p class="mb-1"><strong>Container NO.:</strong> {{ $selectedStock->tracking_id }}</p>
                     <p class="mb-1"><strong>Warehouse:</strong> {{ $selectedStock->warehouse->name }}</p>
-                    <p class="mb-1"><strong>@lang('Vendor / Client'):</strong> {{ $selectedStock->user?->name }}</p>
+                    <p class="mb-1"><strong>@lang('Vendor'):</strong> {{ $selectedStock->user?->name }}</p>
+                    @if($selectedStock->stock_type=='out')
+                    <p class="mb-1"><strong>@lang('Client'):</strong> {{ $selectedStock->userClient?->name }}</p>
+                    @endif
                 </div>
                 <div class="col-12 col-md-4 col-lg-4 col-xl-4">
                     <p class="mb-1"><strong>Labour:</strong> {{ $selectedStock->labour }}</p>

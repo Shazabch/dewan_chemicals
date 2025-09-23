@@ -7,9 +7,10 @@
                         <table class="table table--light style--two bg--white">
                             <thead>
                                 <tr>
-                                    <!-- <th>@lang('Title')</th> -->
+                                    <th>@lang('Title')</th>
                                     <th>@lang('Container NO')</th>
-                                    <th>@lang('Vendor / Client')</th>
+                                    <th>@lang('Vendor')</th>
+                                    <th>@lang('Client')</th>
                                     <th>@lang('Warehouse')</th>
                                     <th>@lang('Date')</th>
                                     <th>@lang('Total Amount')</th>
@@ -22,10 +23,10 @@
                                 @forelse($stocks as $item)
                                 <tr @include('partials.bank-history-color', ['id'=> $item->id])>
 
-                                    <!-- <td>
+                                    <td>
                                         <span class="text--primary fw-bold"> {{ $item->title }}</span>
 
-                                    </td> -->
+                                    </td>
                                     <td title="@if($item->stockInOuts->isNotEmpty())@foreach($item->stockInOuts as $inOut){{ optional($inOut->product)->name ?? 'N/A' }}: {{ $inOut->quantity }}@if(!$loop->last)&#10;@endif @endforeach @else No products in this record. @endif">
                                         <span class="text--primary fw-bold"> {{ $item->tracking_id }}</span>
 
@@ -34,7 +35,10 @@
                                         <span class="text--primary fw-bold"> {{ $item->user?->name }}</span>
 
                                     </td>
+                                    <td>
+                                        <span class="text--primary fw-bold"> {{ $item->userClient?->name }}</span>
 
+                                    </td>
                                     <td>
 
                                         {{ $item->warehouse->name }}

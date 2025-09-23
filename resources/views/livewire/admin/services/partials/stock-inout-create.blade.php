@@ -11,7 +11,7 @@
                                     required>
                             </div>
                         </div>
-                        {{--
+
 
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
@@ -19,7 +19,7 @@
                                 <input type="text" class="form-control" wire:model="title" placeholder="@lang('Title')" required>
                             </div>
                         </div>
-                         --}}
+
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label class="form-label">@lang('Warehouse')</label>
@@ -44,7 +44,7 @@
                         </div>
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group" id="supplier-wrapper">
-                                <label class="form-label">@lang('Vendor / Client')</label>
+                                <label class="form-label">@lang('Vendor')</label>
                                 @if($selected_stock_id)
                                 <x-select2
                                     id="vc-select-select-cv"
@@ -58,11 +58,34 @@
                                     id="vc-select-select-cv"
                                     dataArray="users"
                                     wire:model="user_id"
+                                    placeholder="Select a Vendor"
+                                    :allowAdd="false" />
+                                @endif
+                            </div>
+                        </div>
+                        @if($stock_type=='out')
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="form-group" id="supplier-wrapper">
+                                <label class="form-label">@lang('Client')</label>
+                                @if($selected_stock_id)
+                                <x-select2
+                                    id="vc-select-select-cv-to-edit"
+                                    disabled="true"
+                                    dataArray="userClients"
+                                    wire:model="user_client_id"
+                                    placeholder="Select a Client"
+                                    :allowAdd="false" />
+                                @else
+                                <x-select2
+                                    id="vc-select-select-cv-to"
+                                    dataArray="userClients"
+                                    wire:model="user_client_id"
                                     placeholder="Select a Client"
                                     :allowAdd="false" />
                                 @endif
                             </div>
                         </div>
+                        @endif
                         <div class="col-xl-3 col-sm-6">
                             <label>@lang('Date')</label>
                             <input type="date" class="form-control" wire:model="date">
