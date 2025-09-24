@@ -7,7 +7,7 @@
                         <table class="table table--light style--two bg--white">
                             <thead>
                                 <tr>
-                                    <th>@lang('Title')</th>
+                                    <!-- <th>@lang('Title')</th> -->
                                     <th>@lang('Container NO')</th>
                                     <th>@lang('Vendor')</th>
                                     <th>@lang('Client')</th>
@@ -23,10 +23,10 @@
                                 @forelse($stocks as $item)
                                 <tr @include('partials.bank-history-color', ['id'=> $item->id])>
 
-                                    <td>
+                                    <!-- <td>
                                         <span class="text--primary fw-bold"> {{ $item->title }}</span>
 
-                                    </td>
+                                    </td> -->
                                     <td title="@if($item->stockInOuts->isNotEmpty())@foreach($item->stockInOuts as $inOut){{ optional($inOut->product)->name ?? 'N/A' }}: {{ $inOut->quantity }}@if(!$loop->last)&#10;@endif @endforeach @else No products in this record. @endif">
                                         <span class="text--primary fw-bold"> {{ $item->tracking_id }}</span>
 
@@ -72,12 +72,14 @@
                                                 class="btn btn-sm btn-outline--primary ms-1">
                                                 <i class="la la-eye"></i>
                                             </a>
+                                            @if($item->recieved_amount==0)
                                             @permit(['admin.manage_stock_in.edit'])
                                             <a wire:click.prevent="editDetails({{ $item->id }})"
                                                 class="btn btn-sm btn-outline--primary ms-1">
                                                 <i class="la la-pencil"></i>
                                             </a>
                                             @endpermit
+                                            @endif
                                             @permit(['admin.stock_client_payment'])
                                             {{-- @if($stock_type=='in') --}}
                                             <button type="button"

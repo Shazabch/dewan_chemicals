@@ -236,7 +236,7 @@ class ManageStock extends Component
         $this->isCreating = !$this->isCreating;
         $this->showDetails = false;
         $this->users = [];
-        $this->users = $this->loadUsers();
+        $this->users =  $this->loadUserClients();
         $this->userClients = $this->loadUserClients();
         $this->getProducts();
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
@@ -265,6 +265,7 @@ class ManageStock extends Component
             }
         }])->find($this->selected_stock_id);
         $this->title = $this->selectedStock->title;
+        $this->tracking_id = $this->selectedStock->tracking_id;
         $this->date = $this->selectedStock->date;
         $this->warehouse_id = $this->selectedStock->warehouse_id;
         $this->stock_type = $this->selectedStock->stock_type;
@@ -361,8 +362,8 @@ class ManageStock extends Component
                 'warehouse_id' => $this->warehouse_id,
                 'user_id' => $selecteduserId,
                 'user_model' => $selecteduserModel,
-                'user_client_id' => $selecteduserClientId ?? null,
-                'user_client_model' => $selecteduserClientModel ?? null,
+                'user_client_id' => $selecteduserClientId ?? NULL,
+                'user_client_model' => $selecteduserClientModel ?? NULL,
                 'labour' => $this->labour,
                 'fare' => $this->fare,
                 'vehicle_number' => $this->vehicle_number,
@@ -679,17 +680,44 @@ class ManageStock extends Component
     }
     public function checkAvailableStock($product_id, $warehouse_id, $user_id, $user_model)
     {
+        // Get current availability from DB
         $stockDetail = ServiceStockDetail::where('product_id', $product_id)
             ->where('warehouse_id', $warehouse_id)
             ->where('user_id', $user_id)
             ->where('user_model', $user_model)
             ->first();
 
-        if ($stockDetail) {
-            return $stockDetail->quantity ?? 0;
+        $available = $stockDetail?->quantity ?? 0;
+
+        // 🔹 Edit mode logic: add back old stock effect
+        if ($this->selected_stock_id) {
+            $oldStock = Stock::with('stockInOuts')
+                ->find($this->selected_stock_id);
+
+            if (
+                $oldStock
+                && $oldStock->warehouse_id == $warehouse_id
+                && $oldStock->user_id == $user_id
+                && $oldStock->user_model == $user_model
+            ) {
+                // find the old line for this product
+                $oldItem = $oldStock->stockInOuts->firstWhere('product_id', $product_id);
+
+                if ($oldItem) {
+                    if ($oldStock->stock_type === 'out') {
+                        // old "out" reduced stock → add it back
+                        $available += $oldItem->quantity;
+                    } else {
+                        // old "in" increased stock → remove it
+                        $available -= $oldItem->quantity;
+                    }
+                }
+            }
         }
-        return 0;
+
+        return $available;
     }
+
     public function checkAvailableStockWeight($product_id, $warehouse_id, $user_id, $user_model)
     {
         $stockDetail = ServiceStockDetail::where('product_id', $product_id)
@@ -698,11 +726,33 @@ class ManageStock extends Component
             ->where('user_model', $user_model)
             ->first();
 
-        if ($stockDetail) {
-            return $stockDetail->net_weight ?? 0;
+        $available = $stockDetail?->weight ?? 0;
+
+        if ($this->selected_stock_id) {
+            $oldStock = Stock::with('stockInOuts')
+                ->find($this->selected_stock_id);
+
+            if (
+                $oldStock
+                && $oldStock->warehouse_id == $warehouse_id
+                && $oldStock->user_id == $user_id
+                && $oldStock->user_model == $user_model
+            ) {
+                $oldItem = $oldStock->stockInOuts->firstWhere('product_id', $product_id);
+
+                if ($oldItem) {
+                    if ($oldStock->stock_type === 'out') {
+                        $available += $oldItem->net_weight ?? 0;
+                    } else {
+                        $available -= $oldItem->net_weight ?? 0;
+                    }
+                }
+            }
         }
-        return 0;
+
+        return $available;
     }
+
     public function clearFilters()
     {
         $this->searchTerm = '';

@@ -7,18 +7,18 @@
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label>@lang('Invoice No:')</label>
-                                <input class="form-control" name="tracking_id" readonly type="text" wire:model="tracking_id"
+                                <input class="form-control" name="tracking_id" type="text" readonly wire:model="tracking_id"
                                     required>
                             </div>
                         </div>
 
 
-                        <div class="col-xl-3 col-sm-6">
+                        <!-- <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label class="form-label">@lang('Title')</label>
                                 <input type="text" class="form-control" wire:model="title" placeholder="@lang('Title')" required>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
@@ -47,11 +47,11 @@
                                 <label class="form-label">@lang('Vendor')</label>
                                 @if($selected_stock_id)
                                 <x-select2
-                                    id="vc-select-select-cv"
+                                    id="vc-select-select-cv-edit"
                                     disabled="true"
                                     dataArray="users"
                                     wire:model="user_id"
-                                    placeholder="Select a Client"
+                                    placeholder="Select a Vendor"
                                     :allowAdd="false" />
                                 @else
                                 <x-select2
@@ -65,7 +65,7 @@
                         </div>
                         @if($stock_type=='out')
                         <div class="col-xl-3 col-sm-6">
-                            <div class="form-group" id="supplier-wrapper">
+                            <div class="form-group" id="supplier-wrapper-client">
                                 <label class="form-label">@lang('Client')</label>
                                 @if($selected_stock_id)
                                 <x-select2
